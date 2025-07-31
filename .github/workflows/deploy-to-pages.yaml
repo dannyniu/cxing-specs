@@ -1,0 +1,39 @@
+name: Generate and deploy documents to Pages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Docs-Gen-Pages-Deploy:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sudo apt install weasyprint php cmark
+      - name: step 0/3 checkout
+        uses: actions/checkout@v4
+      - name: step 1/3 configure
+        uses: actions/configure-pages@v5
+      - run: |
+          cd ${{ github.workspace }}
+          doxygen
+          cp -R auto/SafeTypes2-Docs docs/.
+          ( cd docs-src/spec ;
+            php ./spec-main.md.php |
+              cmark --unsafe > ../../docs/cxing-spec-draft.html )
+          weasyprint docs/cxing-spec-draft.html docs/cxing-spec-draft.pdf
+      - name: step 2/3 artifact upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+      - name: step 3/3 deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
