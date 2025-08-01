@@ -24,8 +24,6 @@ jobs:
         uses: actions/configure-pages@v5
       - run: |
           cd ${{ github.workspace }}
-          doxygen
-          cp -R auto/SafeTypes2-Docs docs/.
           ( cd docs-src/spec ;
             php ./spec-main.md.php |
               cmark --unsafe > ../../docs/cxing-spec-draft.html )
