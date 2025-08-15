@@ -1,10 +1,10 @@
 <div class="pagebreak"></div>
 
-<a id="expressions">Expressions</a>
-====
+<?= hc_H1("Expressions") ?>
 
-Grouping, Postifix, and Unaries.
-----
+-- TODO (2025-08-15): define all operations for all types. --
+
+<?= hc_H2("Grouping, Postifix, and Unaries.") ?>
 
 ```
 primary-expr % primary
@@ -28,7 +28,6 @@ postfix-expr % postfix
 | postfix-expr "->" primary-expr % nullcoalesce
 | postfix-expr "[" expressions-list "]" % indirect
 | postfix-expr "(" expressions-list ")" % funccall
-| postfix-expr "@" primary-expr "(" expressions-list ")" % traitcall
 | postfix-expr "." identifier % member
 | postfix-expr "++" % inc
 | postfix-expr "--" % dec
@@ -36,7 +35,7 @@ postfix-expr % postfix
 ;
 ```
 
-- `nullcoalesce`: If the value of `postfix-expr` isn't `null`, then the value
+- `nullcoalesce`: If the value of `postfix-expr` isn't nullish, then the value
   is that of `postfix-expr`, otherwise that of `primary-expr`.
 - `indirect`: Reads the key identified by `expressions-list` from the object
   identified by `postfix-expr`. The result is an lvalue.
@@ -44,18 +43,14 @@ postfix-expr % postfix
   as parameters. If `postfix-expr` is a `member`, then its `postfix-expr`
   is provided as the `this` parameter to a potential method call. The result
   is the return value of the function. See
-  [Subroutines and Methods](#subr-methods) for further discussion.
-- `traitcall`: invoke `primary-expr` as a method passing an opaque handle
-  to a value native object referencing `postfix-expr` as the `this`
-  parameter and `expressions-list` as arguments. `primary-expr` MUST be
-  either `paren` or `ident`.
+  <?= hcNamedSection("Subroutines and Methods") ?> for further discussion.
 - `member`: Reads the key identified by the spelling of `identifier` from
   the object identified by `postfix-expr`. The result is an lvalue.
 - `inc`: Increment `postfix-expr` by 1. The result is the pre-increment value
   of `postfix-expr`. `postfix-expr` MUST be an lvalue.
 - `dec`: Decrement `postfix-expr` by 1. The result is the pre-decrement value
   of `postfix-expr`. `postfix-expr` MUST be an lvalue.
-- `objdef`: See [Type Definition and Object Initialization Syntax](#type-and-obj-def)
+- `objdef`: See <?= hcNamedSection("Type Definition and Object Initialization Syntax") ?>
 
 ```
 unary-expr % unary
@@ -73,21 +68,20 @@ unary-expr % unary
   of `unary-expr`. `unary-expr` MUST be an lvalue.
 - `dec`: Decrement `unary-expr` by 1. The result is the post-decrement value
   of `unary-expr`. `unary-expr` MUST be an lvalue.
-- `positive`: The result is that of `unary-expr` converted to a number -
-  if it's a `long`, `ulong`, or a `double`, then it's not converted,
-  if it's `null`, then it's converted to 0; the behavior is UNSPECIFIED
-  for other types.
-- `negative`: The result is the negative of `unary-expr` converted to a
-  number. The conversion is done in a similar fasion as described
-  for `positive`.
-- `bitcompl`: The result is the bitwise complement of `unary-expr` converted
-  to an integer. `unary-expr` MUST be `null`, `long` or `ulong`.
+- `positive`: The result is that of `unary-expr` implicitly converted to a
+  number if necessary.
+- `negative`: The result is the negative of `unary-expr`, which is implicitly
+  converted to a number if necessary.
+- `bitcompl`: The result is the bitwise complement of `unary-expr` under
+  integer context.
 - `logicnot`: The result is 0 if `unary-expr` is non-zero, and 1 if
-  `unary-expr` compares equal to 0 (both +0 and -0). `null` is considered
-  0 in this case; values of object types are considered non-zero.
+  `unary-expr` compares equal to 0 (both +0 and -0).
 
-Arithmetic Binary Operations
-----
+For `inc` and `dec` in `unary` and `postfix`, and `positive` and `negative`,
+operation occur under arithmetic context. For `bitcompl` and `logicnot`, the
+operation occur under integer context.
+
+<?= hc_H2("Arithmetic Binary Operations") ?>
 
 ```
 mul-expr % mulexpr
@@ -101,7 +95,6 @@ mul-expr % mulexpr
 - `multiply`: The value is the product of `mul-expr` and `unary-expr`.
 - `divide`: The value is the quotient of `mul-expr` divided by `unary-expr`.
 - `remainder`: The value is the remainder of `mul-expr` modulo `unary-expr`.
-  Both operands MUST be integers.
 
 Division on integers SHALL round towards 0. The remainder computed SHALL be
 such that `(a/b)*b + a%b == a` is true. If the divisor is 0, then the
@@ -109,7 +102,8 @@ quotient of division becomes positive/negative infinity of type `double` if
 the sign of both operands are same/different, while the remainder
 becomes `NaN`, with the "**invalid**" floating point exception signalled.
 
-Implicit type and value conversions apply.
+All of `mulexpr` occur under arithmetic context, with the exception
+of `remainder`, which occur under integer context.
 
 ```
 add-expr % addexpr
@@ -123,10 +117,9 @@ add-expr % addexpr
 - `subtract`: The value is the difference of subtracting
   `mul-expr` from `add-expr`.
 
-Implicit type and value conversions apply.
+All of `addexpr` occur under arithmetic context.
 
-Bit Shifting Operations
-----
+<?= hc_H2("Bit Shifting Operations") ?>
 
 ```
 bit-shift-expr % shiftexpr
@@ -145,15 +138,14 @@ bit-shift-expr % shiftexpr
   `add-expr` bits. This is done without regard to the actual signedness
   of the type of `bit-shift-expr` operand.
 
-Both operands MUST be integers.
+All of `shiftexpr` occur under integer context.
 
 **Side Note**: There was left and right rotate operators. Since there's
 only a single 64-bit width in native integer types, bit rotation become
 meaningless. Therefore those functionalities are offered in the standard
 library method functions `u{64,32,16,8}{l,r}rot(amount)`.
 
-Arithmetic Relations
-----
+<?= hc_H2("Arithmetic Relations") ?>
 
 ```
 rel-expr % relops
@@ -174,9 +166,8 @@ rel-expr % relops
 - `ge`: True if and only if `rel-expr` is
   greater than or equal to `bit-shift-expr`.
 
-Both operands MUST be `long`, `ulong`, or `double`. If either operand is NaN,
-then the value of the expression is false. Implicit type and value conversions
-apply.
+All of `relops` occur under arithmetic context. If either operand is NaN,
+then the value of the expression is false.
 
 ```
 eq-expr % eqops
@@ -188,20 +179,19 @@ eq-expr % eqops
 ;
 ```
 
-- `eq`: True if left operand equals the right arithmetically;
+- `eq`: True if left operand equals the right under arithmetic context;
   or if one is `null`, the other is of the integer value 0.
   False otherwise.
 - `ne`: True if left operand does not equal the right operand.
   This includes the case where one operand is of integer values
   other than 0 and the other is `null`. False otherwise.
-- `ideq`: True if left operand equals the right arithmetically;
+- `ideq`: True if left operand equals the right under arithmetic context;
   or if both are `null`. False otherwise.
 - `idne`: True if left operand does not equal the right operand.
   This includes the case where one operand is of the integer value 0
   and the other is `null`. False otherwise.
 
-Bitwise Operations
-----
+<?= hc_H2("Bitwise Operations") ?>
 
 ```
 bit-and % bitand
@@ -224,10 +214,9 @@ bit-or % bitxor
 - `bitxor`: The value is the bitwise exclusive-or of 2 operands.
 - `bitor`: The value is the bitwise inclusive-or of 2 operands.
 
-Both operands MUST be integers.
+All of the bitwise operations occur under integer context.
 
-Boolean Logics
-----
+<?= hc_H2("Boolean Logics") ?>
 
 ```
 logic-and % logicand
@@ -250,8 +239,7 @@ logic-or % logicand
   otherwise, it's the value of the second operand.
 - `nullcoalesce`: Refer to `postfix-expr`.
 
-<a id="compound-expr">Compounds</a>
-----
+<?= hc_H2("Compounds") ?>
 
 ```
 cond-expr % tenary
@@ -287,7 +275,7 @@ assign-expr % assignment
 - `directassign`: writes the value of `assign-expr` to `unary-expr`.
 - *compound assignments*: writes the computed value to `unary-expr`.
 
-See [Object/Value Key Access](#obj-val-key-access) for further discussion.
+See <?= hcNamedSection("Object/Value Key Access") ?> for further discussion.
 
 ```
 expressions-list % exprlist

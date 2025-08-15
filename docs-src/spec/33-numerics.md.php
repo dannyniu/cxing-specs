@@ -1,10 +1,8 @@
 <div class="pagebreak"></div>
 
-<a id="num-maths">Numerics and Maths</a>
-====
+<?= hc_H1("Numerics and Maths") ?>
 
-Rounding
-----
+<?= hc_H2("Rounding") ?>
 
 IEEE-754 specifies the following rounding modes:
 
@@ -30,8 +28,7 @@ the rounding mode in the current thread. The presence of other
 rounding modes (e.g. **roundTiesToAway**, **roundToOdd**, etc.)
 are implementation-defined.
 
-Exceptional Conditions
-----
+<?= hc_H2("Exceptional Conditions") ?>
 
 Infinity and NaNs are not numbers. It is the interpretation of @dannyniu that
 they exist in numerical computation strictly to serve as error recovery and
@@ -72,7 +69,7 @@ are implemented in the language as error-handling flow-control
 constructs, such as null-coalescing expression and phrases operators,
 as well as execution control functions.
 
-<a id="numeric-reproducibility">Reproducibility</a>
-----
+
+<?= hc_H2("Reproducibility") ?>
 
 -- TODO: 2025-07-31 --

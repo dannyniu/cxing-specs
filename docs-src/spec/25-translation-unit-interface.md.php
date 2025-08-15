@@ -1,4 +1,3 @@
-Translation Unit Interface
-====
+<?= hc_H1("Translation Unit Interface") ?>
 
 -- TODO: The extern declaration. --

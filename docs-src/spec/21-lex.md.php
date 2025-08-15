@@ -1,4 +1,3 @@
 <div class="pagebreak"></div>
 
-Lexical Elements.
-====
+<?= hc_H1("Lexical Elements.") ?>

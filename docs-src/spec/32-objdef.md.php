@@ -1,5 +1,4 @@
-<a id="type-and-obj-def">Type Definition and Object Initialization Syntax</a>
-====
+<?= hc_H1("Type Definition and Object Initialization Syntax") ?>
 
 There's a simple syntax in <?= $langname ?> for creating
 compound objects and types:
@@ -24,13 +23,13 @@ with `namedtuple` being sort of a meta.
 A type object contains an method property named `__initset__` declared as follow:
 
 ```
-[ffi] {method,traitdef} [val] __initset__(ref key, ref value);
+[ffi] method [val] __initset__(ref key, ref value);
 ```
 
 The `__initset__` function may be defined in <?= $langname ?> or in a foreign
 language - if the latter, then calling conventions for foreign function
 interface must be followed per
-[Calling Conventions and Foreign Function Interface](#ffi-and-calls).
+<?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>.
 
 ```
 objdef-start % objdefstart

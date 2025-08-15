@@ -1,7 +1,6 @@
 <div class="pagebreak"></div>
 
-Standard Library
-====
+<?= hc_H1("Standard Library") ?>
 
 In the following sections, special notations that're not part of the langauge
 are used for ease of presentation.
@@ -9,13 +8,13 @@ are used for ease of presentation.
 The meaning of such declaration:
 
 ```
-[ffi] method [<type>] identifier(args);
+[ffi] {method,subr} [<type>] identifier(args);
 ```
 
 is as follow:
 
-The bracketed `[ffi]` means this method can be either FFI or non-FFI.
-When it's FFI, it's return type is `<type>`.
+The bracketed `[ffi]` means this is a method or a subroutine can be either FFI
+or non-FFI. When it's FFI, it's return type is `<type>`.
 
 ---
 

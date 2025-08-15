@@ -1,5 +1,4 @@
-Library for the String Data Type
-====
+<?= hc_H1("Library for the String Data Type") ?>
 
 ```
 str := {
@@ -9,7 +8,7 @@ str := {
   [ffi] method [long] puts(str s),
   [ffi] method [long] putfin(),
   [ffi] method [long] cmpwith(str s2), // efficient byte-wise collation.
-  [ffi] method [bool] equals(str s2), // constant-type, cryptography-safe.
+  [ffi] method [bool] equals(str s2), // constant-time, cryptography-safe.
   [ffi] method [structureddata] map(T structlayout),
 };
 

@@ -1,7 +1,6 @@
 <div class="pagebreak"></div>
 
-Phrases
-====
+<?= hc_H1("Phrases") ?>
 
 Between expressions and statements, there are phrases.
 
@@ -66,8 +65,7 @@ or-phrase % orphrase
 - `disj`: Refer to `logic-or`.
 - `nullcoalesce`: Refer to `postfix-expr`.
 
-Statements
-====
+<?= hc_H1("Statements") ?>
 
 ```
 statement % stmt
@@ -87,8 +85,7 @@ statement % stmt
 - `labelled`: Identifies the statement with a label.
 - `brace`: Executes `statements-list`.
 
-Condition Statements
-----
+<?= hc_H2("Condition Statements") ?>
 
 ```
 conditionals % condstmt
@@ -108,15 +105,14 @@ predicated-cluase % predclause
 ```
 
 - `base`: Evaluate `expressions-list` (in expression phrase context as
-  mentioned in the [Compounds section of Expressions chapter](#compound-expr)),
+  mentioned in the <?= hcNamedSection("Compounds") ?>),
   if it's true, then `statement` is executed, otherwise it's not executed.
 - `genrule`: Executes `predicate-clause`, if none of its statement(s) were
   executed due to no predicate evaluated to true, then evaluate
   `expressions-list`, if that is still not true, then `statement` is not
   executed, otherwise, `statement` is executed.
 
-Loops
-----
+<?= hc_H2("Loops") ?>
 
 ```
 while-loop % while
@@ -166,8 +162,7 @@ The description here used the word "once" to describe the semantic of the loop
 in terms of "functional recursion", where "functional" is in the sense of the
 "functional programming paradigm".
 
-Statements List
-----
+<?= hc_H2("Statements List") ?>
 
 ```
 statement-list % stmtlist
@@ -179,8 +174,7 @@ statement-list % stmtlist
 - `base`: `statement` is executed, the semicolon is a delimitor.
 - `genrule`: `statement-list` is first executed, then `statement` is executed.
 
-Declarations
-----
+<?= hc_H2("Declarations") ?>
 
 Because the value of a variable that held integer value may transition to
 `null` after being assigned the result of certain computation, the variable

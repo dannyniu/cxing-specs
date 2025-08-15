@@ -1,10 +1,8 @@
 <div class="pagebreak"></div>
 
-Language Semantics
-====
+<?= hc_H1("Language Semantics") ?>
 
-<a id="objs-vals">Objects and Values</a>
-----
+<?= hc_H2("Objects and Values") ?>
 
 An *object* may have properties, properties may also be called members.
 
@@ -12,18 +10,13 @@ An *object* may have properties, properties may also be called members.
 component, while the word "member" emphasizes its identification. Both words
 may be used interchangeably consistent with the intended point of perspective.
 
-A *full object* is a type in the language. The term "object" when used in such
-way may also refer to an value of the object type, which is a "full object".
-
-An *opaque object* on the other hand has no langauge-accessible properties,
-the outside world can only have interaction with it through functions.
-Opaque objects have interoperable data structure across different compiled
-implementations on a particular platform.
+The internals of an object is largely opaque to the language.
+The primary interface to objects are functions that operates on them.
 
 **Note**: Functions in compiled implementations follow platform ABI's calling
-convention. Because certain opaque objects may need to be used in functions
-compiled on different implementations, the consistency of its structure layout
-on a particular platform is essential.
+convention. Because certain opaque object types (such as the string type)
+in the runtime may need to be used in functions compiled on different
+implementations, the consistency of their structure layout is essential.
 
 A *native object* is a construct for describing the language. It has a
 fixed set of properties, and are copied by value; mutating a native
@@ -40,28 +33,45 @@ An *value* is a native object with the following properties:
 
 Other native objects (may) exist in the language.
 
+All values have a (possibly empty) set of type-associated properties that're
+immutable. These type-associated properties take priority over other
+properties. The behavior is UNSPECIFIED when these properties are written to.
+
 **Note** The data structure for the value native objects are further defined
 to enable the interoperability of certain language features. Values are such
 described to enable discussion of "lvalue"s, alternative implementations
 may use other conceptual models for lvalues should they see fit.
 
-<a id="obj-val-key-access">Object/Value Key Access</a>
-----
+<?= hc_H2("Object/Value Key Access") ?>
 
-As described in [objects and values](#objs-vals) objects have properties.
+As described in <?= hcNamedSection("Objects and Values") ?> objects have
+properties.
 
 <a id="obj-key-read">To read a key from an object</a>:
-- <div>if the key is not defined on the object, a native object results
-  representing an assignable destination and a null value - it consist of</div>
-  <code>(value_proper=null, type=null,
-        scope=&lt;the object&gt;, key=&lt;the key&gt;)</code>
-- <div>if the key is defined on the object, a native object results
-  representing an assignable destination and its *current* value,
-  consisting of</div>
-  <code>(value_proper, type: &lt;the stored value and type&gt;,
-         scope, key: &lt;see above&gt;)</code>
+1. if the key refers to one of the type-associated properties:
+   2. a native object results consisting of:
+      - value-proper: the value of this property,
+      - type: the type of this property.
+2. if the key is not one of the type-associated properties:
+   1. if the key `__get__` is one of the type-associated properties, then
+      this method is used to retrieve the actual property:
+      1. this method is called with the object as its `this` parameter,
+      2. this method is called with the key as a string opaque object,
+      3. its return value is augmented with the 'scope' and 'key' being the
+         object and the key used to access this property, to yield an lvalue.
+   2. if the key `__get__` is not defined as one of the type-associated
+      properties, then an lvalue being `null` augmented with 'scope' and 'key'
+      being the object and the key used to access this property is returned.
+
+**Note** the return value from 2.1.3. may be `null`.
 
 <a id="obj-key-write">To write a key onto an object</a>:
+* For the purpose of this section, it is assumed that the storing of the value
+  onto the object is done using the `__set__` type-assocaited method property.
+  The object is passed as the `this` parameter, the key as the first parameter
+  as a string object, and the value as the value as the the second parameter as
+  a value native object. See
+  <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>
 - the new value is assigned to the identified key on the object,
   with the following exceptions:
 - if the write is a compound assignment (i.e. any assignment of form other
@@ -74,14 +84,17 @@ sides of the assignment operator, perform the computation, then storing the
 result into the key, as the latter performs the read on the lvalue twice.
 
 When a key is being deleted from an object:
+* For the purpose of this section, it is assumed that the deletion of the value
+  from the object is done using the `__unset__` type-associated method
+  property. The object is passed as the `this` parameter, the key as the first
+  parameter as a string object.
 - the value associated with the key on the object is finalized,
   when the finalization is complete, the key is considered not defined
   on the object from this point onwards until it's being written to again.
 
 -- TODO: define "finalize". --
 
-<a id="subr-methods">Subroutines and Methods</a>
-----
+<?= hc_H2("Subroutines and Methods") ?>
 
 Both *subroutines* and *methods* are codes that can be executed in the
 language, the distinction is that methods have an implicit `this` parameter
@@ -106,23 +119,14 @@ usually a pointer, while the parameters in a subroutine have no such
 restriction. To facilitate the correct passing of parameters, this
 necessitates the distinction of methods and subroutines as distinct types.
 
-Some methods are applicable to wide range of certain types of values that may
-not allow member property assignment. In such case, a special type of method
-known as *trait calls* are used. Trait calls receive as its `this` argument,
-an opaque handle to the value native object, whereas member methods receive the
-parent object as their `this` argument. Trait and member methods calls are
-distinguished through their calling syntax. Because trait and member
-method calls expect handles to different types of objects, the behavior
-is UNSPECIFIED if one is called in the context of another.
+For both subroutines and methods, they have both FFI and non-FFI variants.
+FFI stands for foreign function interface. In non-FFI variants their arguments
+are dynamically typed, and can be passed either by value or by reference.
+For FFI variants, the type of their arguments and return valueshave to be
+declared explicitly.
 
-For each of subroutine, methods, and trait calls, they have FFI and non-FFI
-variants. FFI stands for foreign function interface. In non-FFI variants their
-arguments are dynamically typed, and can receive arguments can be passed either
-by value or by reference. For FFI variants, the type of their arguments have to
-be declared explicitly.
-
-(Non-FFI) subroutines, methods, trait calls, and FFI subroutines, FFI methods,
-and FFI trait calls are 6 distinct types.
+(Non-FFI) subroutine functions, method functions, and FFI subroutine functions
+and FFI method functions are 4 distinct types.
 
 The `val` and `ref` Function Operand Interfaces
 ----
@@ -138,8 +142,7 @@ go out of scope. Adding compile-time check to verify that such variables are
 not returned as reference are more complex to implement than simply just
 outlawing them outright.
 
-Types and Special Values
-====
+<?= hc_H1("Types and Special Values") ?>
 
 The `long` and `ulong` types
 ----
@@ -149,11 +152,14 @@ two's complement representation. The `ulong` type is an unsigned 64-bit
 integer type. Both types have sizes and alignments of 8 bytes.
 
 **Note** 32-bit and narrower integer types don't exist natively, primarily
-because of the year 2038 problem. However, their respective type objects,
-as well as that for `float`/`binary32` floating point type are defined in the
-standard library to interpret data structures stored in data buffer objects.
+because of the year 2038 problem and issue with big files. However, respective
+type objects ofr smaller integers, as well as those for `float`/`binary32` and
+other floating point types are defined in the standard library to interpret
+data structures in byte strings.
 
--- TODO: `bool` as alias for `long`, add rationale. --
+The keyword `bool` is used exclusively as an alias for the type `long`, there
+is no restriction that a `bool` can store only 0 or 1, it exist primarily for
+programmers to clarify their intentions.
 
 The `double` type
 ----
@@ -166,8 +172,8 @@ alignment of 8 bytes.
 The `str` type
 ----
 
-The string type `str` is not a built-in type, instead, it's an object type
-defined in the standard library. The string type has significance in the
+The string type `str` is not a built-in type, instead, it's an opaque object
+type defined in the standard library. The string type has significance in the
 `indirect` member access operator in a `postfix-expr` postfix expression.
 
 The `true` and `false` special values
@@ -188,20 +194,32 @@ computation. `NaN` does not compare equal to any number, or to itself.
 
 Both `null` and `NaN` are considered nullish in coalescing operations.
 
-See [Numerics and Maths](#num-maths) for furher discussion.
+See <?= hcNamedSection("Numerics and Maths") ?> for furher discussion.
 
 Implicit Type and Value Conversion
 ----
 
-For many arithmetic operations, types are converted implicitly.
-If and when it applies, the following rule determines the resulting type:
+Values and/or their types may be converted used under certain contexts:
+- The types `long` and `ulong` are collectively "integer context";
+- the type `double` is the "floating point context";
+- the types `long`, `ulong`, and `double` are collectively "arithmetic context".
+
+Under a integer context:
+- the special value `null` have value 0,
+- all opaque objects have a single value of 1,
+- floating point values are converted by discarding fractional part, with the
+  behavior on overflow being UNSPECIFIED.
+
+Under the floating point context:
+- integers are converted preserving value to the extent allowed by precision.
+- the special value `null` is converted to `NaN`.
+- all opaque objects are converted to `+1.0`.
+
+Under arithmetic context:
+- before the following occur, `null` are converted to 0 in `long`, and opaque
+  objects to 1, also in `long`.
 - operations involving only `long`s results in `long` operands;
 - operations involving `ulong` but not `double` results in `ulong` operands;
-- operations involving `double` results in `double`
+- operations involving `double` results in `double`;
 
-Some special values are converted used under certain contexts:
-
-- in type `long` and `ulong`, `null` is converted to 0 (a.k.a. `false`).
-- in type `double`, `null` is converted to `NaN`.
-
-The special value `NaN` always have type `double`.
+**Note**: The special value `NaN` always have type `double`.

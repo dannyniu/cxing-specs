@@ -1,5 +1,4 @@
-Identifier Namespace
-====
+<?= hc_H1("Identifier Namespace") ?>
 
 The goal of this section is to avoid ambiguity of identifiers in the global
 namespace - i.e. avoiding the same identifier with conflicting meanings.
@@ -14,8 +13,7 @@ When an identifier consist of multiplie words, the following terms are defined:
 - Snake Case: underscore-concatentated lowercase words,
 - Verbose Case: underscore-concatenated Pascal case.
 
-Reserved Identifiers
-----
+<?= hc_H2("Reserved Identifiers") ?>
 
 Identifiers in the global namespace that begins with an underscore, followed
 by an uppercase letter is reserved for standardization by the language.
@@ -27,8 +25,7 @@ as "commonly-used" library functions or objects. Although the use of the word
 library vendors should nontheless refrain from defining such terse identifiers
 in the global namespace.
 
-Conventions for Identifiers
-----
+<?= hc_H2("Conventions for Identifiers") ?>
 
 - For type objects, Pascal or Verbose case is recommended.
 - For static functions and constants, Snake or Verbose case is recommended.

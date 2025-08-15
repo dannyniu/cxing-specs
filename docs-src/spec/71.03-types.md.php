@@ -1,10 +1,9 @@
-Type Reflection
-====
+<?= hc_H1("Type Reflection") ?>
 
 ```
-[ffi] traitdef [bool] isnull();
-[ffi] traitdef [bool] islong();
-[ffi] traitdef [bool] isulong();
-[ffi] traitdef [bool] isdouble();
-[ffi] traitdef [bool] isobj(proto);
+[ffi] subr [bool] isnull(val x);
+[ffi] subr [bool] islong(val x);
+[ffi] subr [bool] isulong(val x);
+[ffi] subr [bool] isdouble(val x);
+[ffi] subr [bool] isobj(val x, val proto);
 ```

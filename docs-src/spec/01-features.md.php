@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <a id="features">Features</a>
 ====
 
@@ -40,8 +38,9 @@ timescale = mp4box.movie.timescale ??
 // We do not know which of these functions will fail,
 // but we know some output will be produced, and that
 // will indicate success to some extent.
+// TODO (2025-08-14): revise, or just come up with an entirely new example. //
 fp = open(path, "r+");
-print(fp.readStream().hash("sha256").hex());
+print(hex(sha256(fp)));
 fp.close();
 ```
 
@@ -79,7 +78,10 @@ the following alternative description for "alternate exception handling":
 > of exceptions occur.
 
 As an example, the continued fraction function in code example A-16 from
-"Numerical Computing Guide" of Sun ONE Studio 8 can be written
+"Numerical Computing Guide" of Sun ONE Studio 8
+(<?= hcURL("https://www5.in.tum.de/~huckle/numericalcomputationguide.pdf
+") ?>, accessed 2025-08-15)
+can be written
 in <?= $langname ?> as:
 
 ```
@@ -106,4 +108,4 @@ sub continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
 ```
 
 Reproducibility issues treated in the standard are further discussed in
-[Reproducibility](#numeric-reproducibility)
+<?= hcNamedSection("Reproducibility") ?>
