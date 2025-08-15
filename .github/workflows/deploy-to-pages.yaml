@@ -24,7 +24,7 @@ jobs:
         uses: actions/configure-pages@v5
       - run: |
           cd ${{ github.workspace }}
-          ( cd docs-src/spec ; ../src/hc-cmd.sh -s ;
+          ( cd docs-src/spec ; sh ../src/hc-cmd.sh -s ;
             weasyprint build/singlepage/main.html build/cxing-spec-draft.pdf )
           mv docs-src/spec/build/cxing-spec-draft.pdf docs
       - name: step 2/3 artifact upload
