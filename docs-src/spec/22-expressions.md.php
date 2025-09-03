@@ -1,8 +1,4 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Expressions") ?>
-
--- TODO (2025-08-15): define all operations for all types. --
 
 <?= hc_H2("Grouping, Postifix, and Unaries.") ?>
 
@@ -16,9 +12,7 @@ primary-expr % primary
 ```
 
 - `paren`: The value is that of the `expressions-list`.
-- `array`: The value is an array consisting of
-  elements from the `expressions-list`.
-  -- TODO: define semantics for arrays. --
+- `array`: The value is an array consisting of elements from the `expressions-list`.
 - `ident`: The value is whatever stored in the identifier.
 - `const`: The value is that represented by the constant.
 
@@ -96,14 +90,38 @@ mul-expr % mulexpr
 - `divide`: The value is the quotient of `mul-expr` divided by `unary-expr`.
 - `remainder`: The value is the remainder of `mul-expr` modulo `unary-expr`.
 
-Division on integers SHALL round towards 0. The remainder computed SHALL be
-such that `(a/b)*b + a%b == a` is true. If the divisor is 0, then the
-quotient of division becomes positive/negative infinity of type `double` if
-the sign of both operands are same/different, while the remainder
-becomes `NaN`, with the "**invalid**" floating point exception signalled.
+The result of division on integers SHALL round towards 0.
 
-All of `mulexpr` occur under arithmetic context, with the exception
-of `remainder`, which occur under integer context.
+The remainder computed SHALL be such that `(a/b)*b + a%b == a` is true.
+
+If the divisor is 0, then the quotient of division becomes positive/negative
+infinity of type `double` if the sign of both operands are same/different,
+while the remainder becomes `NaN`, with the "**invalid**" floating point
+exception signalled.
+
+For the purpose of determining the sign of operands, the integer 0 in `ulong`
+and two's complement signed `long` are considered to be positive.
+
+**Editorial Note**: The first 3 of the above 4 paragraphs were together 1
+paragraph in a previous version of the draft before 2025-08-25. This had the
+potential of causing the confusion that remainder is only applicable to
+integers. Because now remainder is also applicable to floating points, this is
+first separated into its own paragraph. The rule regarding type conversion on
+division by 0 is of separate interest, so it's also an individual paragraph
+now. The 4th paragraph is added on 2025-08-25.
+
+**Note** The condition for determining remainder is equivalent to:
+
+> remainder `x % y` ***shall*** be such `x-ny` such that for some integer `n`,
+> if y is non-zero, the result has the same sign as `x` and magnitude less than
+> that of `y`.
+
+These are separate descriptions for integer modulo operator and floating point
+`fmod` function in the C language, as such, an implementation may utilize these
+facilities in C. Any inconsistency between these 2 definitions in C are
+supposedly unintentional from the standard developer's perspective.
+
+All of `mulexpr` occur under arithmetic context.
 
 ```
 add-expr % addexpr
@@ -263,7 +281,8 @@ assign-expr % assignment
 | unary-expr "+=" assign-expr % addassign
 | unary-expr "-=" assign-expr % subassign
 | unary-expr "<<=" assign-expr % lshiftassign
-| unary-expr ">>=" assign-expr % rshiftassign
+| unary-expr ">>=" assign-expr % arshiftassign
+| unary-expr ">>>=" assign-expr % rshiftassign
 | unary-expr "&=" assign-expr % andassign
 | unary-expr "^=" assign-expr % xorassign
 | unary-expr "|=" assign-expr % orassign

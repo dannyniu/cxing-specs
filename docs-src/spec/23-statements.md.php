@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Phrases") ?>
 
 Between expressions and statements, there are phrases.
@@ -121,7 +119,7 @@ while-loop % while
 ```
 
 - `rule`: To execute `rule`, evaluate `expressions-list`, if it's true,
-  then execute `statement` and then `rule`.
+  then execute `statement` and then execute `rule`.
 
 ```
 do-while-loop % dowhile

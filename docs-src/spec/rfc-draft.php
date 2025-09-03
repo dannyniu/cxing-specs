@@ -3,7 +3,7 @@
    include $inc;
 ?>
 <h1 class="booktitle">Request For Comment on Draft Specification for
-The <?= strtoupper($langname) ?> Programming Language.</h1>
+The <?= strtoupper(langname()) ?> Programming Language.</h1>
 
 <p>
 Greetings all. This is a proposed draft of a proposed new programming language.

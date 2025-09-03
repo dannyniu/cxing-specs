@@ -1,0 +1,55 @@
+body {
+  font-family:   Times New Roman, serif;
+  font-size:     11pt;
+  text-align:    justify;
+  orphans:       10;
+  widows:        14;
+}
+
+@page {
+  size:          A4;
+  margin:        18mm 20mm;
+}
+
+.pagebreak {
+  display:       block;
+  break-before:  always;
+}
+
+h1 {
+}
+
+main {
+  orphans:       10;
+  widows:        14;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align:    left;
+  font-family:   Arial, Verdana, sans-serif;
+}
+
+code, pre {
+  text-align:    left;
+  font-family:   Courier New, Courier, monospace;
+  background:    #F0F0F0;
+  border-radius: 2pt;
+}
+
+code {
+  font-size:     91%;
+}
+
+code {
+  display:   inline-block;
+  padding:   1pt 3pt;
+  margin:    1pt;
+}
+
+li {
+  margin:    3mm 1pt;
+}
+
+var {
+  font-family:   serif;
+}

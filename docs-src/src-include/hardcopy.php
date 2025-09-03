@@ -57,12 +57,16 @@
    putenv("ocget=$hcArg");
 
    // 2024-04-11: other future potential headers around here.
-   require_once("hc-9postproc.php");
+   #- require_once("hc-9postproc.php");
    // 2024-04-11: other future potential headers around here.
 
-   $fp = popen("php ./toc.php | cmark --unsafe", "rb");
-   hcPostProc::Proc($fp);
-   #fpassthru($fp);
+   $fp = popen(<<<EOF
+     php ./toc.php | php -r '
+       require_once(getenv("HARDCOPY_SRCINC")."/hc-9postproc.php");
+       hcPostProc::Proc(STDIN);' | cmark --unsafe
+   EOF
+   , "rb");
+   fpassthru($fp);
 
    pclose($fp);
    exit();
@@ -71,6 +75,6 @@
  {
    // 2024-04-11: other future potential headers around here.
    require_once("hc-1toc.php");
-   require_once("hc-9postproc.php");
+   #- require_once("hc-9postproc.php");
    // 2024-04-11: other future potential headers around here.
  }

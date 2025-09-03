@@ -1,3 +1,5 @@
+<div class="pagebreak"></div>
+
 <?= hc_H1("Identifier Namespace") ?>
 
 The goal of this section is to avoid ambiguity of identifiers in the global
@@ -28,5 +30,5 @@ in the global namespace.
 <?= hc_H2("Conventions for Identifiers") ?>
 
 - For type objects, Pascal or Verbose case is recommended.
-- For static functions and constants, Snake or Verbose case is recommended.
+- For subroutines, Snake or Verbose case is recommended.
 - For members and methods, Camel or Pascal case is recommended.

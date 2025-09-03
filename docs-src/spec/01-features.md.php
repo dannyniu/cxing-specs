@@ -8,21 +8,21 @@ provided on how they're to be used. The syntax and semantic definitions follow.
 Memory and Thread Safety
 ----
 
-The language does not expose pointers - to data or to function - only handles.
-It uses reference counting with garbage collection to ensure memory safety.
-It has separate type domain for `sharable` types catered to multi-threaded
-access, and `exclusive` types for efficient access within a single thread;
-only `sharable` types can be declared globally.
+The language does not expose pointers - to data or to function - only opaque
+object handles. It uses reference counting with garbage collection to ensure
+memory safety. It has separate type domain for `sharable` types catered to
+multi-threaded access, and `exclusive` types for efficient access within a
+single thread; only `sharable` types can be declared globally.
 
 Null safety.
 ----
 
 It's typical to desire *some* result come out of a failing program, it is
-even more desirable that the failure of a single component don't deny
+even more desirable that the failure of a single component doesn't deny
 the service of users, it's very desirable that error recovery can be
 easy to program, and it's undesirable that errors cannot be detected.
 
-In <?= $langname ?>, errors occur in the forms of nullish values. For the
+In <?= langname() ?>, errors occur in the forms of nullish values. For the
 special value `null`, accessing any member of it yields `null`, and calling
 a `null` as a function returns `null`. Nullish values can be substituted with
 other alternative values that programs recover from errors.
@@ -34,14 +34,6 @@ other alternative values that programs recover from errors.
 timescale = mp4box.movie.timescale ??
             mp4box.fragments[0].timescale ??
             mp4file.timescale;
-
-// We do not know which of these functions will fail,
-// but we know some output will be produced, and that
-// will indicate success to some extent.
-// TODO (2025-08-14): revise, or just come up with an entirely new example. //
-fp = open(path, "r+");
-print(hex(sha256(fp)));
-fp.close();
 ```
 
 Nullish NaNs
@@ -68,7 +60,7 @@ abstracts away the underlying detail of system and hardware implementations.
 In doing so, the standard itself becomes non-generic, and described features
 specific to some languages that were not present in others.
 
-The <?= $langname ?> language employs null coalescing operators as
+The <?= langname() ?> language employs null coalescing operators as
 general-purpose error-handling syntax, and make it cover NaNs by making them
 nullish. As an unsolicited half-improvement, I (@dannyniu) propose
 the following alternative description for "alternate exception handling":
@@ -82,11 +74,10 @@ As an example, the continued fraction function in code example A-16 from
 (<?= hcURL("https://www5.in.tum.de/~huckle/numericalcomputationguide.pdf
 ") ?>, accessed 2025-08-15)
 can be written
-in <?= $langname ?> as:
+in <?= langname() ?> as:
 
 ```
-// TODO: Update this example when declaration syntax are specified.
-sub continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
+subr continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
 {
     decl f, f1, d, d1, pd1, q;
     decl j;
@@ -108,4 +99,4 @@ sub continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
 ```
 
 Reproducibility issues treated in the standard are further discussed in
-<?= hcNamedSection("Reproducibility") ?>
+<?= hcNamedSection("Reproducibility and Robustness") ?>

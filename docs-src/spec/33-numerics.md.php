@@ -2,6 +2,11 @@
 
 <?= hc_H1("Numerics and Maths") ?>
 
+**Note** Much of this section is motivated by a desire to have a self-contained
+description of numerics in commodity computer systems, as well as an/a
+interpretation / explanation / rationale of the standard text that's at least
+more useful in terms of practical usage than the standard text itself.
+
 <?= hc_H2("Rounding") ?>
 
 IEEE-754 specifies the following rounding modes:
@@ -41,7 +46,7 @@ IEEE-754 specifies the following 5 exceptions:
   - "cancellation of infinities" in additive, multiplicative, or some other
     domains. Examples include subtracting infinity from infinity, multiplying
     0 with infinity, or dividing 0 with 0 or infinity with infinity.
-  - the input is outside the domain of the operation.
+  - the input is outside the domain of the operation, e.g. sqrt(-1).
 
 - **pole**: known as "division by zero" in standard's term. A pole results
   when operation by an operand results in an infinite limit. Particular cases
@@ -70,6 +75,70 @@ constructs, such as null-coalescing expression and phrases operators,
 as well as execution control functions.
 
 
-<?= hc_H2("Reproducibility") ?>
+<?= hc_H2("Reproducibility and Robustness") ?>
 
--- TODO: 2025-07-31 --
+Floating points have a fixed significand width as well as limited range(s) of
+exponents, as such, they're very similar to *scientific notations*, further
+as such, they suffer from the same **inaccuracy** problems as any notation that
+truncates a large fraction of value digits. However, this do yield a favorable
+trade-off in terms of implementation (and to some extent, usage) **efficiency**.
+
+IEEE-754 recommends that language standard provide a mean to derive a sequence
+(graph actually, if taken dependencies into account) of computation in a way
+that is deterministic. Many C compilers provide options that make maths work
+faster using arithmetic associativity, commutativity, distributivity and other
+laws (e.g. *fast-math* options), <?= langname() ?> make no provision that
+prevents this - people favoring efficiency and people favoring accuracy should
+both be audience of this language.
+
+The root cause of calculation errors stem from the fact that the significand of
+floating point datum are limited. This error is amplified in calculations. A
+way to quantify this error is using the "unit(s) in the last place" - ULP.
+There are various definitions of ULP. Vendors of mathematical libraries may at
+their discretion document the error amplification behavior of their library
+routines for users to consult; framework and library standards may at their
+discretion specify requirements in terms error amplification limits. Developers
+are reminded again to recognize, and evaluate at their discretion, the
+trade-off between accuracy and efficiency.
+
+Because of the existence of calculation errors, floating point datum are
+recommended as instrument of data exchange. In fact, earlier versions of the
+IEEE-754 standard distinguished between interchange formats and arithmetic
+formats. Because arithmetics and the format where it's carried out are
+essentially black-box implementation details, the significance of arithmetic
+formats is no longer emphasized in IEEE-754.
+
+The recommended methodology of arithmetic, is to first derive procedure of
+calculation that is a simplified version of the full algorithm, eliminating
+as much amplification of error as possible, then feed the input datum elements
+into the algorithm to obtain the output data. The procedure so derived should
+take into account of any exceptions that might occur.
+
+For example, `(a+b)(c+d) = ac+ad + bc+bd` have
+2 additions and 1 multiplication on the left-hand side and
+3 additions and 4 multiplications on the right-hand side.
+
+a program may first attempt to calculate the left hand side, because it has
+less chance of error amplification. However, if the addition of `c` and `d`
+overflows but they're individually small enough such that their multiplication
+with either `a` and `b` won't overflow, yet the sum of `a` and `b` underflows
+in a certain way that's catastrophic, the the whole expression may become `NaN`.
+
+In this case, a fallback expression may then compute the right-hand side of the
+expression, possibly yielding a finite result, or at least one that
+arithmetically make sense (i.e. infinity).
+
+The result of computation carried out using such "derived" procedure will
+certainly deviate from the result from of a "complete" algorithm. Developers
+should recognize that robustness may be more important in some applications
+than they may expect. In the limited circumstances where an application in
+reality is less important, or in fact be prototyping, developer may at their
+careful discretion, excercise less engineering effort when coding a numerical
+program.
+
+Finally, it is recognized that large existing body of sophisticated numerical
+programs are written using 3rd-party libraries, and/or using techniques that're
+under active research and not specified and beyond the scope of many standards.
+Developers requiring high numerial sophistication and robustness are encouraged
+to consult these research, and evaluate (again) the accuracy and efficiency
+requirements at their careful discretion.

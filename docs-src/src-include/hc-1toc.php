@@ -322,7 +322,7 @@
 
    if( getenv("ocget") !== "true" ) $toc = "toc.php?oc=toc/";
 
-   $ret .= "<nav class=navbar-multipage>\n";
+   $ret .= "<nav class=navbar-multipage>";
    $ret .= $prev ?? " <a>(first)</a> ";
    $ret .= " <a target=toc href=\"$toc\">[Table of Contents]</a> ";
    $ret .= $next ?? " <a>(last)</a> ";
@@ -457,9 +457,7 @@
 
    echo "\x02"; // ASCII Start Of Text.
 
-   echo "\n  </body>\n";
-   echo "</html>\n";
-
+   echo "\n</body>\n</html>\n";
    return;
  }
 

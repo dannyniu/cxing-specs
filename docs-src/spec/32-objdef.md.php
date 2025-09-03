@@ -1,6 +1,6 @@
 <?= hc_H1("Type Definition and Object Initialization Syntax") ?>
 
-There's a simple syntax in <?= $langname ?> for creating
+There's a simple syntax in <?= langname() ?> for creating
 compound objects and types:
 
 ```
@@ -26,7 +26,7 @@ A type object contains an method property named `__initset__` declared as follow
 [ffi] method [val] __initset__(ref key, ref value);
 ```
 
-The `__initset__` function may be defined in <?= $langname ?> or in a foreign
+The `__initset__` function may be defined in <?= langname() ?> or in a foreign
 language - if the latter, then calling conventions for foreign function
 interface must be followed per
 <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>.
@@ -62,3 +62,7 @@ expression on the left side of the colon, while the value is that of the
 assignment expression on the right side of the colon. After this completes,
 the newly created object will receive a property named `__proto__`,
 which will be assigned the value of `postfix-expr`.
+
+The `array` production of primary expressions is a syntax sugar that invokes
+`__initset__` with elements in the `expressions-list` as value and successive
+integer indicies as key, starting with 0.

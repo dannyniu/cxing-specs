@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Language Semantics") ?>
 
 <?= hc_H2("Objects and Values") ?>
@@ -45,18 +43,36 @@ may use other conceptual models for lvalues should they see fit.
 <?= hc_H2("Object/Value Key Access") ?>
 
 As described in <?= hcNamedSection("Objects and Values") ?> objects have
-properties.
+properties. The key used to access a value on an object is typically a string
+or an integer.
+
+When the key used to access a property is an integer, there may be a mapping
+from the integer to a string defined by the implementation of the runtime.
+Portable applications SHOULD NOT create objects with mixed string and integer
+keys. All implementations of the runtime SHALL guarantee there's no collision
+between any key that is the valid spelling of an identifier and any integer
+between 0 and 10<sup>10</sup> inclusive.
+
+**Note** The limit was chosen for efficiency reasons. While implementing a
+number to string conersion would immediately solve the issue of collision
+between numerical and identifier keys, it's slightly inefficient. A second
+option would be to pad the integer word with bytes that can never be valid in
+identifiers, this would be the best of both worlds. Yet considering most
+applications won't be needing such big array, and those that do would probably
+go for the string type in the standard library, a limit is set so that
+plausible real-world applications and implementations can enjoy the efficiency
+enabled by such latitude.
 
 <a id="obj-key-read">To read a key from an object</a>:
 1. if the key refers to one of the type-associated properties:
-   2. a native object results consisting of:
+   1. a native object results consisting of:
       - value-proper: the value of this property,
       - type: the type of this property.
 2. if the key is not one of the type-associated properties:
    1. if the key `__get__` is one of the type-associated properties, then
       this method is used to retrieve the actual property:
       1. this method is called with the object as its `this` parameter,
-      2. this method is called with the key as a string opaque object,
+      2. this method is called with the key as a `val`,
       3. its return value is augmented with the 'scope' and 'key' being the
          object and the key used to access this property, to yield an lvalue.
    2. if the key `__get__` is not defined as one of the type-associated
@@ -69,7 +85,7 @@ properties.
 * For the purpose of this section, it is assumed that the storing of the value
   onto the object is done using the `__set__` type-assocaited method property.
   The object is passed as the `this` parameter, the key as the first parameter
-  as a string object, and the value as the value as the the second parameter as
+  as a `val`, and the value as the value as the the second parameter as
   a value native object. See
   <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>
 - the new value is assigned to the identified key on the object,
@@ -87,12 +103,14 @@ When a key is being deleted from an object:
 * For the purpose of this section, it is assumed that the deletion of the value
   from the object is done using the `__unset__` type-associated method
   property. The object is passed as the `this` parameter, the key as the first
-  parameter as a string object.
-- the value associated with the key on the object is finalized,
-  when the finalization is complete, the key is considered not defined
-  on the object from this point onwards until it's being written to again.
+  parameter as a `val`.
+- any resources used by the value associated with the key on the object is
+  finalized, the key is then removed from the object, after which the member
+  identified by the key is considered not defined on the object from this point
+  onwards (until it's being written to again).
 
--- TODO: define "finalize". --
+**Note** The finalization is specific to "resources". Finalization is further
+discussed in <?= hcNamedSection("Finalization and Garbage Collection") ?>
 
 <?= hc_H2("Subroutines and Methods") ?>
 
@@ -153,7 +171,7 @@ integer type. Both types have sizes and alignments of 8 bytes.
 
 **Note** 32-bit and narrower integer types don't exist natively, primarily
 because of the year 2038 problem and issue with big files. However, respective
-type objects ofr smaller integers, as well as those for `float`/`binary32` and
+type objects for smaller integers, as well as those for `float`/`binary32` and
 other floating point types are defined in the standard library to interpret
 data structures in byte strings.
 
@@ -223,3 +241,8 @@ Under arithmetic context:
 - operations involving `double` results in `double`;
 
 **Note**: The special value `NaN` always have type `double`.
+
+**Note**: It was considered to have certain operations in integer context that
+involved floating points to have NaNs, but this was dropped for 2 simple
+reasons: 1st, the current *conversion* rule is much simpler written, and 2nd,
+there exist prior art with JavaScript.

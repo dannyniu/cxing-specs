@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Runtime Semantics") ?>
 
 While the features and the specification of the language is supposed to be
@@ -16,12 +14,12 @@ in line with recommendation by [Semantic Versioning](https://semver.org/).
 <?= hc_H2("Binary Linking Compatibility") ?>
 
 Dynamic libraries and applications linking with dynamic libraries programmed
-in <?= $langname ?> should not statically link with the <?= $langname ?>
+in <?= langname() ?> should not statically link with the <?= langname()." " ?>
 runtime. Unless no opaque objects is passed between translation units compiled
 by different implementations (which is unlikely), statically linking to
 different incompatible implementations of the runtime may result in undefined
-behavior when members of full objects are accessed outside the translation
-units where they were created.
+behavior when opaque objects and the functions that manipulates them are from
+different implementations.
 
 The version of the runtime and the version of the language specification are
 coupled together to make it easy to determine which version of runtime should
@@ -29,6 +27,13 @@ be used to obtain the features of relevant version of the language. If the
 standard library is to be provided, then the runtime should be provided as part
 of the standard library, the name of the linking library file should be the
 same for both the runtime and for when it's extended into/as standard library.
+
+<?php
+ if( !isset($spec_semver) )
+ {
+   global $spec_majver, $spec_minver, $spec_revver, $spec_semver;
+ }
+?>
 
 The recommended name for the library corresponding to version
 <?= "$spec_majver.$spec_minver" ?> of the specification is
@@ -40,14 +45,6 @@ recommended name is `libcxing<?= "$spec_majver.$spec_minver.dylib" ?>` .
 For some platforms such as Windows, vendors have greater control over the
 dynamic libraries bundled with the programs in an application. Therefore
 no particular recommendations are made for these platforms.
-
-<?= hc_H2("Member Access") ?>
-
--- Note: much of this section is scrubbed. --
-
-For the purpose of this section, the special value `null` is implemented as if
-it has same type as a full object, and a value proper of 0.
--- TODO (2025-08-13): Should I retain this paragraph? If so, how and where? --
 
 <?= hc_H2("Calling Conventions and Foreign Function Interface") ?>
 
@@ -104,9 +101,12 @@ struct type_nativeobj {
     enum types_enum typeid;
     uint64_t n_entries;
 
-    // There are `n_entries + 1` elements,
-    // last of which `type` being `NULL`.
-    struct value_nativeobj static_members[];
+    // There are `n_entries + 1` elements, last of which `type` being `NULL`.
+    // TODO 2025-08-26: should this array be sparse (i.e. have null entries)?
+    struct {
+        const char *name;
+        struct value_nativeobj *member;
+    } static_members[];
 };
 ```
 
@@ -132,14 +132,27 @@ arguments as the `struct value_nativeobj *` pointer type in runtime binding.
 Methods receive `this` as their first argument as the `ref` language type (i.e.
 the `struct value_nativeobj *` runtime pointer type).
 
-Finally, non-FFI functions may receive their arguments differently than FFI
-functions. For example, a non-FFI function may receive an array of values -
-for this purpose, the `ref` type may be represented inside a `val` using the
-type code enumeration `valtyp_ref`.
-
 <?= hc_H2("Finalization and Garbage Collection") ?>
 
+-- TODO: define "finalize". --
+
+Resources are generically defined as what enables a program to run and
+function, and assciated with it. When a value is finalized, the resource
+associated with it is released; when a value is destroyed the resource
+associated with it may be freed, and will be freed by the time of
+garbage-collection. "Releasing" and "freeing" are implementation-defined
+actions that make it more *likely* but doesn't guarantee that acquiring of
+future resources have more chance of succeeding.
+
+**Note**: On a reference-counted implementation (which is conceptually
+prescribed), releasing an object "decreases" its reference count, and when the
+reference count reaches 0, the resources are "freed". Under
+implementation-defined circumstances, an object may be released by all, but
+still referenced somewhere (e.g. reference cycle), which require garbage
+collection to fully "free" the object and its resources.
+
 ```
-void cxing_finalize(struct value_nativeobj);
-void cxing_gc(void);
+ffi subr null cxing_gc();
 ```
+
+The `cxing_gc` foreign function invokes the garbage collection process.
