@@ -63,8 +63,10 @@
    $fp = popen(<<<EOF
      php ./toc.php | php -r '
        require_once(getenv("HARDCOPY_SRCINC")."/hc-9postproc.php");
-       hcPostProc::Proc(STDIN);' | cmark --unsafe
+       hcPostProc::Proc(STDIN);'
    EOF
+   if( getenv("HARDCOPY_OUTPUT_CONTROL") != "pagelist/" )
+   $fp .= "| cmark --unsafe";
    , "rb");
    fpassthru($fp);
 
