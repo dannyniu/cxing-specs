@@ -60,14 +60,14 @@
    #- require_once("hc-9postproc.php");
    // 2024-04-11: other future potential headers around here.
 
-   $fp = popen(<<<EOF
+   $cmd = <<<EOF
      php ./toc.php | php -r '
        require_once(getenv("HARDCOPY_SRCINC")."/hc-9postproc.php");
        hcPostProc::Proc(STDIN);'
-   EOF
+   EOF;
    if( getenv("HARDCOPY_OUTPUT_CONTROL") != "pagelist/" )
-   $fp .= "| cmark --unsafe";
-   , "rb");
+   $cmd .= "| cmark --unsafe";
+   popen($cmd, "rb");
    fpassthru($fp);
 
    pclose($fp);
