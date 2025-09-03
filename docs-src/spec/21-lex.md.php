@@ -75,9 +75,9 @@ Characters and Strings
 ----
 
 *Character and string literals* have the following production:
-`['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-3][0-7]{0,2}))['"]`
+`['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
 
-In the 2nd alternative, each alternative have the following meanings:
+In the 2nd subexpression, each alternative have the following meanings:
 1. Escaping
    - For single and double quote characters, they're represented literally
      and don't delimit the literal.
@@ -91,7 +91,8 @@ In the 2nd alternative, each alternative have the following meanings:
 2. Hexadecimal byte literal. The first character is interpreted as the high
    nibble of the byte, while the second the low.
 3. Octal byte literal. The characters (total 3 at most) are interpreted as an
-   octal integer literal used as value for the byte.
+   octal integer literal used as value for the byte. If there are 3 digits,
+   then the first digit must be between 0 and 3.
 
 When single-quoted, the literal is a character literal having the value of the
 first character as type `long`, the behavior is implementation-defined if there
