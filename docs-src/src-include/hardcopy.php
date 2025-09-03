@@ -67,7 +67,7 @@
    EOF;
    if( getenv("HARDCOPY_OUTPUT_CONTROL") != "pagelist/" )
    $cmd .= "| cmark --unsafe";
-   popen($cmd, "rb");
+   $fp = popen($cmd, "rb");
    fpassthru($fp);
 
    pclose($fp);
