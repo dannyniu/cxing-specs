@@ -28,7 +28,8 @@ The entity identified by `<name1>` is a subclass of `<name2>` (typically `val`),
 and consist of additional members enumerated by the ellipsis `...`.
 The word "subclass" is used here only to imply that object of type `<name1>`
 may be used anywhere `<name2>` is expected. `<name2>` is not optional, because
-it signifies to the runtime how an argument of such type are to be passed.
+it signifies to implementors of the runtime how an argument of such type
+are to be passed.
 
 **Note**: The notation is inspired by Python. Object-oriented programming is
 not a supported paradigm of <?= langname() ?>. The notation is strictly for

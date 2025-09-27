@@ -24,14 +24,15 @@ primary-phrase % primaryphrase
 flow-control-phrase % flowctrl
 : control-flow-operator % op
 | control-flow-operator label % labelledop
-| "return" % returnvoid
+| "return" % returnnull
 | "return" expression % returnexpr
 ;
 ```
 
 - `op`: Apply the flow-control operation to the inner-most applicable scope.
 - `labelledop`: Apply the flow-control operation to the labelled statement scope.
-- `returnvoid`: Terminates the executing function.
+- `returnnull`: Terminates the executing function.
+  If the caller expected a return value, it'll be `null`.
 - `returnexpr`: Terminates the executing function with
   return value being that of `expression`.
 

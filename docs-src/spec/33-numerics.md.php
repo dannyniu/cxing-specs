@@ -2,7 +2,7 @@
 
 <?= hc_H1("Numerics and Maths") ?>
 
-**Note** Much of this section is motivated by a desire to have a self-contained
+**Note**: Much of this section is motivated by a desire to have a self-contained
 description of numerics in commodity computer systems, as well as an/a
 interpretation / explanation / rationale of the standard text that's at least
 more useful in terms of practical usage than the standard text itself.
@@ -74,7 +74,6 @@ are implemented in the language as error-handling flow-control
 constructs, such as null-coalescing expression and phrases operators,
 as well as execution control functions.
 
-
 <?= hc_H2("Reproducibility and Robustness") ?>
 
 Floating points have a fixed significand width as well as limited range(s) of
@@ -142,3 +141,12 @@ under active research and not specified and beyond the scope of many standards.
 Developers requiring high numerial sophistication and robustness are encouraged
 to consult these research, and evaluate (again) the accuracy and efficiency
 requirements at their careful discretion.
+
+<?= hc_H2("Recommended Applications of Floating Points") ?>
+
+The recommended applications of floating points in computer, are
+*Computer Graphics*, *Signal Processing*, *Artificial Intelligence*, etc.
+
+Typical characteristics of these applications include:
+- datum need to be over real-valued domain,
+- tolerance of loss of precision by end user.

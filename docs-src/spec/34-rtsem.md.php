@@ -76,7 +76,7 @@ enum types_enum : uint64_t {
     valtyp_ffimethod,
 
     // 10 types so far.
-}
+};
 
 struct value_nativeobj;
 struct type_nativeobj;
@@ -101,8 +101,8 @@ struct type_nativeobj {
     enum types_enum typeid;
     uint64_t n_entries;
 
-    // There are `n_entries + 1` elements, last of which `type` being `NULL`.
-    // TODO 2025-08-26: should this array be sparse (i.e. have null entries)?
+    // There are `n_entries + 1` elements, last of which `type` being the only
+    // `NULL` entry in the array.
     struct {
         const char *name;
         struct value_nativeobj *member;
@@ -134,15 +134,10 @@ the `struct value_nativeobj *` runtime pointer type).
 
 <?= hc_H2("Finalization and Garbage Collection") ?>
 
--- TODO: define "finalize". --
-
 Resources are generically defined as what enables a program to run and
-function, and assciated with it. When a value is finalized, the resource
-associated with it is released; when a value is destroyed the resource
-associated with it may be freed, and will be freed by the time of
-garbage-collection. "Releasing" and "freeing" are implementation-defined
-actions that make it more *likely* but doesn't guarantee that acquiring of
-future resources have more chance of succeeding.
+function, and assciated with it. When a value is destroyed, the resources
+associated with it are finalized and released, which may lead to the resources
+be free for reuse elsewhere.
 
 **Note**: On a reference-counted implementation (which is conceptually
 prescribed), releasing an object "decreases" its reference count, and when the
@@ -151,8 +146,41 @@ implementation-defined circumstances, an object may be released by all, but
 still referenced somewhere (e.g. reference cycle), which require garbage
 collection to fully "free" the object and its resources.
 
+**Editorial Note**: Previously (before 2025-09-26), finalize and destroy were
+used interchangeably; now finalize refer to that of resource and destroy refer
+to that of values (i.e. the concept of value native objects).
+
 ```
 ffi subr null cxing_gc();
 ```
 
 The `cxing_gc` foreign function invokes the garbage collection process.
+
+**Note**: In part because of the runtime implementation need to be informed of
+destruction of values to finalize relevant resources, more pressingly because
+of benefit to the design of idiomatic standard library features, copying and
+destruction of values are now being defined. To define the concepts in terms of
+reference counts would mean to depend on intrinsic implementation details, and
+also that there's circular dependency in definition. Seeking an alternative,
+it's discovered that copying and destroying are paired concepts that must be
+described together, and this is the approach that will be taken right now.
+
+To *copy* a value, means to preserve its existence in the event of
+its *destruction*, which causes the value ceases to exist; when a value is
+copied, the value and the copied value can both exist, and the destruction
+of either don't affect the existence of the other.
+
+The `__copy__` property is a method that copies its `this` argument and
+returns "the copy". The `__final__` property is a method that releases the
+resources used by the value before the destruction of the value.
+
+The `__copy__` and `__final__` may not necessarily be type-associated
+properties, programs can define their own types with copy and finalization
+methods as long as the object they're implementing these methods for have
+a `__set__` property.
+
+**Note**: Primitive types such as `long`, `ulong`, and `double` may not need
+a `__copy__` method - runtime recognizing these sort of types may copy them
+in any way that may be assumed reasonable according to common sense. For types
+without a `__final__` method, it is assumed that there are no resource consumed
+by the value beyond what's already in the value native object structure.

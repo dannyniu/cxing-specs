@@ -1,7 +1,5 @@
 <?= hc_H1("Translation Unit Interface") ?>
 
--- TODO: The extern declaration. (Did 2025-08-25.) --
-
 A translation unit consist of a series of function declarations and
 definitions. Because definition of objects occur during run time, it's not
 possible to define data objects of static storage duration in <?= langname() ?>,

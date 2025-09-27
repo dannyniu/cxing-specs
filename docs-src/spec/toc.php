@@ -23,7 +23,7 @@
  hcAddPages("24-functions");
  hcAddPages("25-translation-unit-interface");
  hcAddPages("31-langsem"); # Pending Confirmation.
- hcAddPages("32-objdef"); # Good(2025-07-31).
+ hcAddPages("32-objdef"); # Good(2025-07-31), MajorFixed(2025-09-14).
  hcAddPages("33-numerics"); # Good(2025-08-26).
  hcAddPages("34-rtsem");
 

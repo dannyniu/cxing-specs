@@ -36,7 +36,7 @@ For `ffisubr` and `ffimethod`, the function so defined or declared is an FFI
 function. The type of its parameters can be `val`, `ref`, `long`, `ulong`,
 `double`, and they're passed to the function as described in
 <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>.
-The return type MUST NOT be as prohibited in
+The return type MUST NOT be `ref` as prohibited in
 <?= hcNamedSection("Subroutines and Methods") ?>.
 
 For `subr` and `method`, function body MUST be either `emptystmt`, in which

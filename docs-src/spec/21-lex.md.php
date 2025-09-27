@@ -11,7 +11,15 @@ most notably Perl, Python, PHP, and have been adopted by JavaScript. Care have
 been taken to ensure the expressions used in this chapter are interpreted
 identically under both semantics.
 
-Comments in the code blocks begin with 2 forward slashes: `//`.
+Comments
+----
+
+Comments in the language begin with 2 forward slashses: `//`, and span towards
+the end of the line. Another form of comments exists, where it begins with `/*`
+and ends with `*/` - this form of comment can span multiple lines.
+
+Comments in the following explanatory code blocks use the same notation as in
+the actual language.
 
 Identifiers and Keywords
 ----
@@ -106,7 +114,7 @@ Punctuations
 A punctuation is one of the following:
 
 ```
-( ) [ ] -> . ++ -- + - ~ ! * / %
+( ) [ ] =? . ++ -- + - ~ ! * / %
 << >> >>> < > & ^ |
 <= >= == != === !== && || ?? ? :
 = *= /= %= += -= <<= >>= >>>= &= ^= |= &&= ||= ,

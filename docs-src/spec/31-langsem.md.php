@@ -35,7 +35,7 @@ All values have a (possibly empty) set of type-associated properties that're
 immutable. These type-associated properties take priority over other
 properties. The behavior is UNSPECIFIED when these properties are written to.
 
-**Note** The data structure for the value native objects are further defined
+**Note**: The data structure for the value native objects are further defined
 to enable the interoperability of certain language features. Values are such
 described to enable discussion of "lvalue"s, alternative implementations
 may use other conceptual models for lvalues should they see fit.
@@ -53,7 +53,7 @@ keys. All implementations of the runtime SHALL guarantee there's no collision
 between any key that is the valid spelling of an identifier and any integer
 between 0 and 10<sup>10</sup> inclusive.
 
-**Note** The limit was chosen for efficiency reasons. While implementing a
+**Note**: The limit was chosen for efficiency reasons. While implementing a
 number to string conersion would immediately solve the issue of collision
 between numerical and identifier keys, it's slightly inefficient. A second
 option would be to pad the integer word with bytes that can never be valid in
@@ -79,7 +79,7 @@ enabled by such latitude.
       properties, then an lvalue being `null` augmented with 'scope' and 'key'
       being the object and the key used to access this property is returned.
 
-**Note** the return value from 2.1.3. may be `null`.
+**Note**: the return value from 2.1.3. may be `null`.
 
 <a id="obj-key-write">To write a key onto an object</a>:
 * For the purpose of this section, it is assumed that the storing of the value
@@ -95,7 +95,7 @@ enabled by such latitude.
   part of the compound assignment is performed, and the result is stored
   written to they key on the object.
 
-**Note** Compound assignment is different from loading the values from both
+**Note**: Compound assignment is different from loading the values from both
 sides of the assignment operator, perform the computation, then storing the
 result into the key, as the latter performs the read on the lvalue twice.
 
@@ -105,12 +105,13 @@ When a key is being deleted from an object:
   property. The object is passed as the `this` parameter, the key as the first
   parameter as a `val`.
 - any resources used by the value associated with the key on the object is
-  finalized, the key is then removed from the object, after which the member
+  finalized, if the `__final__` method property exists on the object, then it's
+  called, the key is then removed from the object, after which the member
   identified by the key is considered not defined on the object from this point
   onwards (until it's being written to again).
 
-**Note** The finalization is specific to "resources". Finalization is further
-discussed in <?= hcNamedSection("Finalization and Garbage Collection") ?>
+**Note**: Destruction of values and finalization of resources are further
+discussed in <?= hcNamedSection("Finalization and Garbage Collection") ?>.
 
 <?= hc_H2("Subroutines and Methods") ?>
 
@@ -130,17 +131,10 @@ have to be identified through a member access.
   - the implicit `this` in a method is `null`.
   - a subroutine is invoked as is.
 
-**Note** In compiled implementations, functions follow the platform ABI's
-calling convnetion. The distinction between subroutines and methods means that
-the first parameter of a method always receive the `this` handle, which is
-usually a pointer, while the parameters in a subroutine have no such
-restriction. To facilitate the correct passing of parameters, this
-necessitates the distinction of methods and subroutines as distinct types.
-
 For both subroutines and methods, they have both FFI and non-FFI variants.
 FFI stands for foreign function interface. In non-FFI variants their arguments
 are dynamically typed, and can be passed either by value or by reference.
-For FFI variants, the type of their arguments and return valueshave to be
+For FFI variants, the type of their arguments and return values have to be
 declared explicitly.
 
 (Non-FFI) subroutine functions, method functions, and FFI subroutine functions
@@ -160,6 +154,19 @@ go out of scope. Adding compile-time check to verify that such variables are
 not returned as reference are more complex to implement than simply just
 outlawing them outright.
 
+The `this` parameter receive its arguments as `val` in the runtime. This allows
+methods to be assigned to different objects and access other object properties -
+including type-associated properties such as `__get__`, etc.
+
+**Note**: In a previous revision, there was a note claimed that `this` being a
+pointer handle. The idea back then was that when <?= langname() ?> runtime is
+implemented with SafeTypes2, certain APIs of the library can be used without
+modification. However, better runtime implementation stratagy was discovered
+which resulted in the introduction of type-associated properties.
+And so `this` parameter is received as a `val` in all (both actually) types of
+methods. Still, to facilitate the correct passing of parameters, it
+necessitates the distinction between methods and subroutines.
+
 <?= hc_H1("Types and Special Values") ?>
 
 The `long` and `ulong` types
@@ -169,7 +176,7 @@ The `long` type is a signed 64-bit integer type with negative values having
 two's complement representation. The `ulong` type is an unsigned 64-bit
 integer type. Both types have sizes and alignments of 8 bytes.
 
-**Note** 32-bit and narrower integer types don't exist natively, primarily
+**Note**: 32-bit and narrower integer types don't exist natively, primarily
 because of the year 2038 problem and issue with big files. However, respective
 type objects for smaller integers, as well as those for `float`/`binary32` and
 other floating point types are defined in the standard library to interpret

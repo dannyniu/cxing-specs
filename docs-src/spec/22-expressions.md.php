@@ -19,7 +19,7 @@ primary-expr % primary
 ```
 postfix-expr % postfix
 : primary-expr % degenerate
-| postfix-expr "->" primary-expr % nullcoalesce
+| postfix-expr "=?" primary-expr % nullcoalesce
 | postfix-expr "[" expressions-list "]" % indirect
 | postfix-expr "(" expressions-list ")" % funccall
 | postfix-expr "." identifier % member
@@ -44,7 +44,14 @@ postfix-expr % postfix
   of `postfix-expr`. `postfix-expr` MUST be an lvalue.
 - `dec`: Decrement `postfix-expr` by 1. The result is the pre-decrement value
   of `postfix-expr`. `postfix-expr` MUST be an lvalue.
-- `objdef`: See <?= hcNamedSection("Type Definition and Object Initialization Syntax") ?>
+- `objdef`: See <?= hcNamedSection("Type Definition and Object Initialization Syntax") ?>.
+
+**Note**: Previously, the close-binding null-coalescing operator was `->`,
+this was changed as it had been desired to reserve it for a 'trait' static call
+syntax where the first argument of a subroutine (i.e. non-method function)
+receives the value of or a reference to the left-hand of the operator. This is
+tentative and no commitment over this had been made yet. All in all, the
+close-binding null-coalescing operator is now `=?`. (Note dated 2025-09-26.)
 
 ```
 unary-expr % unary
@@ -110,7 +117,7 @@ first separated into its own paragraph. The rule regarding type conversion on
 division by 0 is of separate interest, so it's also an individual paragraph
 now. The 4th paragraph is added on 2025-08-25.
 
-**Note** The condition for determining remainder is equivalent to:
+**Note**: The condition for determining remainder is equivalent to:
 
 > remainder `x % y` ***shall*** be such `x-ny` such that for some integer `n`,
 > if y is non-zero, the result has the same sign as `x` and magnitude less than
@@ -160,8 +167,8 @@ All of `shiftexpr` occur under integer context.
 
 **Side Note**: There was left and right rotate operators. Since there's
 only a single 64-bit width in native integer types, bit rotation become
-meaningless. Therefore those functionalities are offered in the standard
-library method functions `u{64,32,16,8}{l,r}rot(amount)`.
+meaningless. Therefore those functionalities will be offered in the standard
+library method functions.
 
 <?= hc_H2("Arithmetic Relations") ?>
 
