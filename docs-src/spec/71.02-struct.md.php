@@ -13,15 +13,15 @@ decl half, float, double; // binary16, binary32, binary64.
 // decl huge, uhuge, quad, _Decimal128; // too large.
 
 struct_inst(obj) := {
-  method __initset__(val key, val value),
+  method val __initset__(val key, val value),
 };
 
 packed_inst(obj) := {
-  method __initset__(val key, val value),
+  method val __initset__(val key, val value),
 };
 
 union_inst(obj) := {
-  method __initset__(val key, val value),
+  method val __initset__(val key, val value),
 };
 
 subr struct_inst struct();

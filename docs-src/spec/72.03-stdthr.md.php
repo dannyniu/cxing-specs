@@ -68,12 +68,12 @@ potential resources used by the value protected by the mutex and the mutex itsel
 <?= hc_H2("Condition Variables") ?>
 
 ```
- subr [condvar_inst] condvar(mutex_inst mtx);
+subr condvar_inst condvar(mutex_inst mtx);
 
 condvar_inst(sharableObj) := {
-  method [exclusiveObj] wait(),
-  method [long] broadcast(),
-  method [long] signal(),
+  method exclusiveObj wait(),
+  method long broadcast(),
+  method long signal(),
 }
 ```
 
@@ -106,14 +106,14 @@ efficient than `broadcast()` when there's only 1 waiting thread.
 
 ```
 thrd_hnd(obj) := {
-  method [val] join();
-  method [val] detach();
-  method [bool] equals(thrd_hnd t2);
+  method val join();
+  method val detach();
+  method bool equals(thrd_hnd t2);
 }
 
-subr [thrd_hnd] thrd_create(val thrd_entry, val thrd_param);
-subr [thrd_hnd] thrd_self();
-subr [null] thrd_exit();
+subr thrd_hnd thrd_create(val thrd_entry, val thrd_param);
+subr thrd_hnd thrd_self();
+subr null thrd_exit();
 ```
 
 The `thrd_create()` function creates a thread with the `thrd_entry` as its
