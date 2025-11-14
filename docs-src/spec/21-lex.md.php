@@ -29,7 +29,7 @@ A *keyword* is an identifier that matches one of the following:
 
 ```
 // Types:
-long ulong double val ref
+long ulong double val obj in out
 
 // Special Values:
 true false null
@@ -44,7 +44,7 @@ decl
 if else elif while do for
 
 // Functions:
-subr method ffi this
+subr method this
 
 // Translation Unit Interface:
 _Include extern
@@ -63,6 +63,16 @@ literal always has type `ulong`.
 *Hexadecimal integer literals* have
 the following production: `0[xX][0-9a-fA-F]+`.
 A hexadecimal literal always has type `ulong`.
+
+*Radix-64 literals* have the following production: `0\\[A-Za-z0-9._]+`.
+The primary use of radix-64 literals are as option flags to functions, as
+bitwise compositions are obscure, and symbolic constants need verbose prefixes
+to not pollute global name space. A radix-64 literal always have type `ulong`.
+The characters following the backslash have the same numerical value as those
+in the [Base 64 Encoding with URL and Filename Safe Alphabet](https://www.rfc-editor.org/rfc/rfc4648#section-5)
+except that the minus sign (`-`) is replaced with a period (`.`) due to possible
+ambiguity with the subtraction expression operator, and that there's no
+padding characters.
 
 *Fraction literals* has the following production: `[0-9]+\.[0-9]*|\.[0-9]+`.
 The literal always has type `double`.
@@ -83,7 +93,7 @@ Characters and Strings
 ----
 
 *Character and string literals* have the following production:
-`['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
+`?['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
 
 In the 2nd subexpression, each alternative have the following meanings:
 1. Escaping
@@ -107,6 +117,15 @@ first character as type `long`, the behavior is implementation-defined if there
 are multiple characters.
 
 When double-quoted, the literal is a string literal having type `str`.
+
+*Raw string literals* have the following production:
+`\("[^"]*"|'[^']')`
+
+In a raw string literal, there is no escape sequence. Single quotes cannot
+appear in single-quoted raw string literals, and double quotes cannot appear
+in double-quoted raw string literals.
+
+Raw string literals are primarily intended for writing regular expressions.
 
 Punctuations
 ----

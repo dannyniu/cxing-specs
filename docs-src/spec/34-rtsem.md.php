@@ -1,5 +1,12 @@
 <?= hc_H1("Runtime Semantics") ?>
 
+With the exception of resources and garbage collection, everything else in
+_the entirity of this chapter_ is concerned with the interoperability of
+compiled implementations. Non-compiled implementations are nonetheless
+recommended to consult this chapter to maintain modal conceptual consistency.
+Care have been taken to ensure that this chapter is decoupled to the maximal
+extent from language proper, and any entanglement is not intentionally desired.
+
 While the features and the specification of the language is supposed to be
 stable, **as a guiding policy**, in the unlikely event where certain interface
 in the runtime posing efficiency problem are to be replaced with alternatives,
@@ -50,8 +57,7 @@ no particular recommendations are made for these platforms.
 
 The types `long` and `ulong` are passed to functions as C types `int64_t`
 and `uint64_t` respectively; the type `double` is passed as the
-C type `double`; handles to full objects and opaque objects are passed as
-C language object pointers.
+C type `double`.
 
 The "value" and "lvalue" native object are defined as the
 following C structure types:
@@ -67,13 +73,14 @@ enum types_enum : uint64_t {
     valtyp_obj,
 
     // `porper.p` points to a `struct value_nativeobj`.
+    // currently unused.
     valtyp_ref,
 
-    // FFI and non-FFI subroutines and methods.
+    // subroutines and methods.
     valtyp_subr = 6,
     valtyp_method,
-    valtyp_ffisubr,
-    valtyp_ffimethod,
+    valtyp_ffisubr, // reserved as of 2025-11-03.
+    valtyp_ffimethod, // reserved as of 2025-11-03.
 
     // 10 types so far.
 };
@@ -82,7 +89,7 @@ struct value_nativeobj;
 struct type_nativeobj;
 
 struct value_nativeobj {
-    union { double f; uint64_t l; int64_t u; void *p; } proper;
+    union { double f; int64_t l; uint64_t u; void *p; } proper;
     union {
         const struct type_nativeobj *type;
         uint64_t pad; // zero-extend the type pointer to 64-bit on ILP32 ABIs.
@@ -110,27 +117,50 @@ struct type_nativeobj {
 };
 ```
 
-For the special value `null`, there are 2 accepted representations that
-implementations MUST anticipate:
-- `typeid` having an enumeration value of 0 - `valtyp_null`.
-- `value.p.proper` having `NULL` with `typeid` having `valtyp_obj`.
+As mentioned in language semantics, there are 2 types of nulls:
+- The 'blessed' `null`, where `typeid` equals 0 - `valtyp_null`, and `l` member
+  of value proper contains the diagnostic information that may be obtained
+  through uncasting.
+- "Morgoth" is where `p` of value proper contains `NULL` with `typeid` having
+  the enumeration value `valtyp_obj`.
 
-For non-FFI functions, parameters declared with type `val` receive arguments as
-the `struct value_nativeobj` structure in runtime binding; values are returned
-in similarly in the `struct value_nativeobj` structure type.
-(As mentioned in <?= hcNamedSection("Subroutines and Methods") ?>,
-no function may return a `ref`.)
+A function in <?= langname() ?> receive its arguments as a pointer to an array
+of value native objects, passed as the second argument in the respective
+C calling convention, with the fisrt argument containing the number of actual
+arguments passed. Because <?= langname() ?> is a dynamically typed language,
+the actual number of passed arguments may be less (or more in certain cases)
+than the number of argument expected as inferred from the declaration of the
+functions. Implementations must anticipate for these and generate Morgoth `null`s
+as appropriate when these values are accessed.
 
-For FFI functions, parameters declared with type `long`, `ulong`, and `double`
-receive arguments as their respective C language type, and in accordance to the
-ABI specification of relevant platform(s); values are returned according to
-their type declaration also in accordance to relevant platform ABI definitions.
+As mentioned in <?= hcNamedSection("Subroutines and Methods") ?>, methods
+carries an implicit `this` parameter, this is passed as the initial argument
+(i.e. element with index 0 in the array of value native objects); subroutines
+on the other hand receive the first argument as the initial element in the
+arguments array directly.
 
-For both non-FFI and FFI functions, parameters declared as `ref` receive
-arguments as the `struct value_nativeobj *` pointer type in runtime binding.
+The C prototype of <?= langname() ?> functions are:
 
-Methods receive `this` as their first argument as the `ref` language type (i.e.
-the `struct value_nativeobj *` runtime pointer type).
+```
+struct value_nativeobj <func-ident>(int argn, struct value_nativeobj args[]);
+```
+
+Where `<func-ident>` is the identifier naming the function.
+
+**Note**: Before 2025-10-03, it was mistakenly said that the `this` parameter
+is received as a `ref`. This was in conflict with the spec developer intent
+that opaque objects be passed as pointer handles. Since better runtime
+implementation stratagy was discovered, the passing of `this` and opaque
+object arguments are revised. See note in
+<?= hcNamedSection("Subroutines and Methods") ?> .
+As of 2025-10-27, the `ref` argument type is removed completely.
+
+The <?= langname() ?> language did away with foreign function interface as of
+Nov. 2025, and this aspect had been replaced entirely with reverse FFI - that
+is, instead of <?= langname() ?> invoking the foreign function, a foregin
+language exposes a <?= langname() ?> interface instead, and
+invokes <?= langname() ?> function in accordance to the <?= langname() ?> calling
+conventions.
 
 <?= hc_H2("Finalization and Garbage Collection") ?>
 
@@ -151,7 +181,7 @@ used interchangeably; now finalize refer to that of resource and destroy refer
 to that of values (i.e. the concept of value native objects).
 
 ```
-ffi subr null cxing_gc();
+subr null cxing_gc();
 ```
 
 The `cxing_gc` foreign function invokes the garbage collection process.
@@ -171,13 +201,16 @@ copied, the value and the copied value can both exist, and the destruction
 of either don't affect the existence of the other.
 
 The `__copy__` property is a method that copies its `this` argument and
-returns "the copy". The `__final__` property is a method that releases the
-resources used by the value before the destruction of the value.
+returns "the copy" as a `val`. The `__final__` property is a method that
+releases the resources used by the value before the destruction of the value.
 
-The `__copy__` and `__final__` may not necessarily be type-associated
-properties, programs can define their own types with copy and finalization
-methods as long as the object they're implementing these methods for have
-a `__set__` property.
+Although the `__copy__` and `__final__` properties are not required to be
+type-associated, but because they manipulate resources that're opaque to the
+language, they usually need to be implemented as type-associated.
+
+**Outstanding**: Provision may be made in the future allowing these properties
+to be extended by the program, or equivalent capability be provided. There is
+no commitment over this at the moment however.
 
 **Note**: Primitive types such as `long`, `ulong`, and `double` may not need
 a `__copy__` method - runtime recognizing these sort of types may copy them

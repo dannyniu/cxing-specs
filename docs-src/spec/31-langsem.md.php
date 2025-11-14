@@ -1,3 +1,5 @@
+<div class="pagebreak"></div>
+
 <?= hc_H1("Language Semantics") ?>
 
 <?= hc_H2("Objects and Values") ?>
@@ -29,7 +31,7 @@ An *value* is a native object with the following properties:
       for `sharable` types, this can also be the "global" scope,
    2. a *key* - this identifies/is the name of the lvalue under the scope.
 
-Other native objects (may) exist in the language.
+Other native objects may be introduced in the future.
 
 All values have a (possibly empty) set of type-associated properties that're
 immutable. These type-associated properties take priority over other
@@ -79,7 +81,8 @@ enabled by such latitude.
       properties, then an lvalue being `null` augmented with 'scope' and 'key'
       being the object and the key used to access this property is returned.
 
-**Note**: the return value from 2.1.3. may be `null`.
+**Note**: The return value from 2.1.3. may be `null`. The `null` resulting from
+step 2.2. shall be a Morgoth, because there exists no diagnostic information.
 
 <a id="obj-key-write">To write a key onto an object</a>:
 * For the purpose of this section, it is assumed that the storing of the value
@@ -131,41 +134,22 @@ have to be identified through a member access.
   - the implicit `this` in a method is `null`.
   - a subroutine is invoked as is.
 
-For both subroutines and methods, they have both FFI and non-FFI variants.
-FFI stands for foreign function interface. In non-FFI variants their arguments
-are dynamically typed, and can be passed either by value or by reference.
-For FFI variants, the type of their arguments and return values have to be
-declared explicitly.
-
-(Non-FFI) subroutine functions, method functions, and FFI subroutine functions
-and FFI method functions are 4 distinct types.
-
-The `val` and `ref` Function Operand Interfaces
-----
-
-For non-FFI functions, when a parameter is declared with `val`, then
-the corresponding argument is passed by value; when declared with `ref`, then
-passed by reference.
-
-No type of function may return `ref` for the simple reason that certain value
-that may potentially be returned are of "temporary" storage duration - they
-exist only on the stack frame of called function, and are destroyed when they
-go out of scope. Adding compile-time check to verify that such variables are
-not returned as reference are more complex to implement than simply just
-outlawing them outright.
-
-The `this` parameter receive its arguments as `val` in the runtime. This allows
-methods to be assigned to different objects and access other object properties -
-including type-associated properties such as `__get__`, etc.
+Previously (before 2025-11-03), there had been FFI (foreign function interface)
+subroutines and functions. Because it's impossible to determine the prototype
+of the functions called from properties of objects, it is therefore unsafe to
+call FFI functions. On the same safety note, calling convention of (non-FFI)
+subroutine and methods are changed to take into account for potentially missing
+parameters.
 
 **Note**: In a previous revision, there was a note claimed that `this` being a
 pointer handle. The idea back then was that when <?= langname() ?> runtime is
 implemented with SafeTypes2, certain APIs of the library can be used without
 modification. However, better runtime implementation stratagy was discovered
 which resulted in the introduction of type-associated properties.
-And so `this` parameter is received as a `val` in all (both actually) types of
-methods. Still, to facilitate the correct passing of parameters, it
+And so `this` parameter is received as a `val` in all (currently one) type(s)
+of methods. Still, to facilitate the correct passing of parameters, it
 necessitates the distinction between methods and subroutines.
+As of 2025-10-27, the `ref` argument type is removed entirely.
 
 <?= hc_H1("Types and Special Values") ?>
 
@@ -212,10 +196,19 @@ The `null` and `NaN` special values
 
 The `null` special value results in certain error conditions. Accessing
 any properties (unless otherwise stated) results in `null`; calling `null`
-as if it's a function results in `null`. `null` compares equal to itself.
+as if it's a function results in `null`.
+
+There are 2 kinds of `null`s
+- The 'blessed' `null` contains diagnostic information in the form of a signed
+  integer (i.e. `long`), that may be obtained by *uncasting*.
+- "Morgoth" - which uncasts to another "Morgoth" `null`. This kind of `null` is
+  to be used when no diagnosis is needed.
+
+All `null`s compares equal to each other barring uncasting.
 
 The `NaN` special value represents exceptional condition in mathematical
 computation. `NaN` does not compare equal to any number, or to itself.
+Uncasting an `NaN` results in its bit pattern being re-interpreted as a `long`.
 
 Both `null` and `NaN` are considered nullish in coalescing operations.
 
@@ -241,11 +234,12 @@ Under the floating point context:
 - all opaque objects are converted to `+1.0`.
 
 Under arithmetic context:
-- before the following occur, `null` are converted to 0 in `long`, and opaque
-  objects to 1, also in `long`.
+- before the following occur, opaque objects are converted to 1 in `long`.
 - operations involving only `long`s results in `long` operands;
 - operations involving `ulong` but not `double` results in `ulong` operands;
 - operations involving `double` results in `double`;
+- operations involving `null` are treated specially - if there are `double`,
+  the `null` is converted to `NaN`, otherwise, to 0 under integer context.
 
 **Note**: The special value `NaN` always have type `double`.
 

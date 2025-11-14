@@ -5,6 +5,10 @@ The <?= langname() ?> Programming Language
   This build of the (draft) spec is based on git commit
   <?php system("git rev-parse HEAD") ?></small>
 
+<small style="display: block; text-align: left;">
+The 2025-11-(??14??) revision of the draft spec is a feature-complete beta,
+and is ready to be implemented for testing</small>
+
 <?= hc_H1("Introduction") ?>
 
 

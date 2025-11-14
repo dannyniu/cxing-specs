@@ -1,5 +1,8 @@
 <?= hc_H1("Library for the Describing Data Structure Layout") ?>
 
+> This chapter forms an integral part of the language and
+> its implementation is mandatory.
+
 ```
 decl char, byte; // signed and unsigned 8-bit,
 decl short, ushort; // signed and unsigned 16-bit,
@@ -9,21 +12,21 @@ decl half, float, double; // binary16, binary32, binary64.
 // decl _Decimal32, _Decimal64; // not supported yet.
 // decl huge, uhuge, quad, _Decimal128; // too large.
 
-struct_inst(val) := {
-  [ffi] method [val] __initset__(ref key, ref value),
+struct_inst(obj) := {
+  method __initset__(val key, val value),
 };
 
-packed_inst(val) := {
-  [ffi] method [val] __initset__(ref key, ref value),
+packed_inst(obj) := {
+  method __initset__(val key, val value),
 };
 
-union_inst(val) := {
-  [ffi] method [val] __initset__(ref key, ref value),
+union_inst(obj) := {
+  method __initset__(val key, val value),
 };
 
-[ffi] subr [struct_inst] struct();
-[ffi] subr [packed_inst] packed();
-[ffi] subr [union_inst] union();
+subr struct_inst struct();
+subr packed_inst packed();
+subr union_inst union();
 ```
 
 The representations for `char`, `byte`, `short`, `ushort`, `int`, `uint`,

@@ -1,19 +1,22 @@
 <?= hc_H1("Library for the String Data Type") ?>
 
+> This chapter forms an integral part of the language and
+> its implementation is mandatory.
+
 ```
 str(val) := {
-  [ffi] method [long] len(),
-  [ffi] method [str] trunc(ulong newlength),
-  [ffi] method [str] putc(long c),
-  [ffi] method [str] puts(str s),
-  [ffi] method [str] putfin(),
-  [ffi] method [long] cmpwith(str s2), // efficient byte-wise collation.
-  [ffi] method [bool] equals(str s2), // constant-time, cryptography-safe.
-  [ffi] method [structureddata] map(val structlayout),
+  method long len(),
+  method str trunc(ulong newlength),
+  method str putc(long c),
+  method str puts(str s),
+  method str putfin(),
+  method long cmpwith(str s2), // efficient byte-wise collation.
+  method bool equals(str s2), // constant-time, cryptography-safe.
+  method structureddata map(obj structlayout),
 };
 
-structureddata(val) := {
-  [ffi] method [val] unmap(),
+structureddata(obj) := {
+  method bool unmap(),
 }
 ```
 
@@ -47,6 +50,27 @@ memory backing is writable by default, and the circumstances under which it's
 not is implementation-defined.
 
 The `unmap()` function unmaps the parsed representation, thus making it
-no longer usable. The variable can then only be finalized (or overwritten,
-which would imply a finalization). The `trunc()` function cannot be called on
-the string unless there's no active mapping of the string.
+no longer usable, and returns `true`. The variable can then only be finalized
+(or overwritten, which would imply a finalization). The `trunc()` function
+cannot be called on the string unless there's no active mapping of the string.
+
+**Note**: Previously, the `unmap()` function returned `null`. Because nullish
+values are reserved in <?= langname() ?> entirely as an error indicator, its
+return type is now changed to `bool`.
+
+**Note**: Although the canonical way to access data behind a `str` object, is
+to first map it to a structure type, it is anticipated that a common extension
+will exist in the wild allowing for "mutable" strings - where they implement
+the `__get__` and the `__set__` methods. This is not yet considered for
+standardization eventhough there's no compelling reason not to. For
+implementations that do provide this extension, the following requirements apply:
+
+> 1. The `__get__` method shall return `long` for byte range 0-255 inclusive,
+>    and -1 on out of bound access.
+> 2. The `__set__` method shall accept second argument of at least the `long` and
+>    the `ulong` type, and shall cast `double` to `ulong` by truncating fractions.
+>    The byte values shall be set by discarding all but lowest 8 bits of the byte
+>    (non-octet bytes are not considered for <?= langname() ?>).
+> 3. The application shall ensure the key be non-negative integer indicies of
+>    type `long` or `ulong`, and the implementation may have undefined behavior
+>    if this requirement on the applications are not met.

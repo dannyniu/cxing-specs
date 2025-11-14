@@ -77,7 +77,7 @@ can be written
 in <?= langname() ?> as:
 
 ```
-subr continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
+subr null continued_fraction(val N, val a, val b, val x, obj p)
 {
     decl f, f1, d, d1, pd1, q;
     decl j;
@@ -93,8 +93,8 @@ subr continued_fraction(val N, val a, val b, val x, ref pf, ref pf1)
         pd1 = d1;
         f = a[j] + q;
     }
-    pf = f;
-    pf1 = f1;
+    p.f = f;
+    p.f1 = f1;
 }
 ```
 

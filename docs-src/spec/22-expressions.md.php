@@ -5,14 +5,12 @@
 ```
 primary-expr % primary
 : "(" expressions-list ")" % paren
-| "[" expressions-list "]" % array
 | identifier % ident
 | constant % const
 ;
 ```
 
 - `paren`: The value is that of the `expressions-list`.
-- `array`: The value is an array consisting of elements from the `expressions-list`.
 - `ident`: The value is whatever stored in the identifier.
 - `const`: The value is that represented by the constant.
 
@@ -20,7 +18,7 @@ primary-expr % primary
 postfix-expr % postfix
 : primary-expr % degenerate
 | postfix-expr "=?" primary-expr % nullcoalesce
-| postfix-expr "[" expressions-list "]" % indirect
+| postfix-expr "[" assign-expr "]" % indirect
 | postfix-expr "(" expressions-list ")" % funccall
 | postfix-expr "." identifier % member
 | postfix-expr "++" % inc

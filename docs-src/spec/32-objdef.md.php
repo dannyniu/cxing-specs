@@ -26,13 +26,15 @@ with `namedtuple` being sort of a meta.
 A type object contains an method property named `__initset__` declared as follow:
 
 ```
-[ffi] method [val] __initset__(ref key, ref value);
+method val __initset__(val key, val value);
 ```
 
-The `__initset__` function may be defined in <?= langname() ?> or in a foreign
-language - if the latter, then calling conventions for foreign function
-interface must be followed per
-<?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>.
+**Note** The parameters of the `__initset__` method property were changed from
+`ref` to `val`. For one, most usages would have keys and values as literals,
+so it doesn't make sense to have references to them. Other issue is that, there
+haven't been a way to signify the end of list. This is now changed to use the
+setting of the existing `__proto__` property to the type object for signifying
+the end-of-list. As of 2025-10-27, the `ref` argument type is removed completely.
 
 ```
 objdef-start % objdefstart
@@ -52,20 +54,26 @@ objdef-start-nocomma % objdefstartnocomma
 object-notation % objdef
 : postfix-expr "{" "}" % empty
 | objdef-start "}" % some
+| postfix-expr "[" "]" % emptyarray
+| postfix-expr "[" expressions-list "]" % array
 ;
 ```
 
 The `postfix-expr` MUST NOT be `inc` or `dec`. Furthermore, if `postfix-expr`
-is `degenerate`, then the primary expression MUST NOT be `array` or `const`.
+is `degenerate`, then the primary expression MUST NOT be `const`.
 
 On encountering a `postfix-expr` that is a type object, the key-value pairs
 enclosed in the braces delimited by commas are taken and the `__initset__`
 method is called on them in turn. The key is the value of the postfix
 expression on the left side of the colon, while the value is that of the
 assignment expression on the right side of the colon. After this completes,
-the newly created object will receive a property named `__proto__`,
-which will be assigned the value of `postfix-expr`.
+the `__initset__` method is invoked with `__proto__` as key and
+the value of `postfix-expr` to signify the end, and then, the now value
+of `postfix-expr` becomes the value of the `object-notation` expression.
 
-The `array` production of primary expressions is a syntax sugar that invokes
-`__initset__` with elements in the `expressions-list` as value and successive
-integer indicies as key, starting with 0.
+**Note**: As such, the property names `__initset__` and `__proto__` are
+*RESERVED* for the "Type Definition and Object Initialization Syntax".
+
+The `array` rule is a syntax sugar that invokes `__initset__` with elements
+in the `expressions-list` as value and successive integer indicies as key,
+starting with 0.

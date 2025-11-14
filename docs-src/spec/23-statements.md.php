@@ -32,7 +32,7 @@ flow-control-phrase % flowctrl
 - `op`: Apply the flow-control operation to the inner-most applicable scope.
 - `labelledop`: Apply the flow-control operation to the labelled statement scope.
 - `returnnull`: Terminates the executing function.
-  If the caller expected a return value, it'll be `null`.
+  If the caller expected a return value, it'll be a Morgoth `null`.
 - `returnexpr`: Terminates the executing function with
   return value being that of `expression`.
 

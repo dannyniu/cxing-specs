@@ -13,7 +13,6 @@ source code and execute it directly for when it can be achieved. The terms
 "translation unit" and "relocatable object" take their usual commonly accepted
 meanings in building programs and applications.
 
-
 <?= hc_H2("Translation Unit Source Code Syntax") ?>
 
 The goal symbol of a source code text string is `TU` - the translation unit
