@@ -77,8 +77,8 @@ unary-expr % unary
   `unary-expr` compares equal to 0 (both +0 and -0).
 
 For `inc` and `dec` in `unary` and `postfix`, and `positive` and `negative`,
-operation occur under arithmetic context. For `bitcompl` and `logicnot`, the
-operation occur under integer context.
+operation are computed under arithmetic context. For `bitcompl` and `logicnot`,
+the operation are computed under integer context.
 
 <?= hc_H2("Arithmetic Binary Operations") ?>
 
@@ -126,7 +126,7 @@ These are separate descriptions for integer modulo operator and floating point
 facilities in C. Any inconsistency between these 2 definitions in C are
 supposedly unintentional from the standard developer's perspective.
 
-All of `mulexpr` occur under arithmetic context.
+All of `mulexpr` are computed under arithmetic context.
 
 ```
 add-expr % addexpr
@@ -140,7 +140,7 @@ add-expr % addexpr
 - `subtract`: The value is the difference of subtracting
   `mul-expr` from `add-expr`.
 
-All of `addexpr` occur under arithmetic context.
+All of `addexpr` are computed under arithmetic context.
 
 <?= hc_H2("Bit Shifting Operations") ?>
 
@@ -161,7 +161,7 @@ bit-shift-expr % shiftexpr
   `add-expr` bits. This is done without regard to the actual signedness
   of the type of `bit-shift-expr` operand.
 
-All of `shiftexpr` occur under integer context.
+All of `shiftexpr` are computed under integer context.
 
 **Side Note**: There was left and right rotate operators. Since there's
 only a single 64-bit width in native integer types, bit rotation become
@@ -189,8 +189,8 @@ rel-expr % relops
 - `ge`: True if and only if `rel-expr` is
   greater than or equal to `bit-shift-expr`.
 
-All of `relops` occur under arithmetic context. If either operand is NaN,
-then the value of the expression is false.
+All of the ordering relations of `relops` are evaluated under arithmetic context.
+If either operand is NaN or null, then the value of the expression is false.
 
 ```
 eq-expr % eqops
@@ -213,6 +213,82 @@ eq-expr % eqops
 - `idne`: True if left operand does not equal the right operand.
   This includes the case where one operand is of the integer value 0
   and the other is `null`. False otherwise.
+
+- `eq`: True if and only if both sides loosely compare equal. False otherwise.
+- `ne`: Equivalent to `!(<eq-expr> == <rel-expr>)`,
+- `ideq`: True if and only if both sides strictly compare equal. False otherwise.
+- `idne`: Equivalent to `!(<eq-expr> === <rel-expr>)`,
+
+<?= hc_H3("Details of Loose and Strict Equality and Ordering Relation Comparison") ?>
+
+To evaluate whether two operands are equal:
+- Functions are identity compared - i.e. assuming there's no mechanism in this
+  specification that re-interprets a subroutine as a method, vice versa, or
+  with any unspecified forms of functions, the value proper are compared
+  as if they're C pointers.
+- Objects are first examined for comparison methods:
+  - if comparing for equality, the `equals()` method is first examined; if this
+    is not present, or if comparing for ordering relation or loose equality,
+    the `cmpwith()` method is then examined.
+  - if the corresponding methods are not the same function, or one is missing:
+    - For loose equality comparison:
+      - if the `equals()` method of at least one operand returns true when
+        called appropriately, then the two operands compares equal,
+      - if the `cmpwith()` method of at least one operand returns 0 when called
+        appropriately, then the two operands compares equal.
+      - if the value porper of the value native object of both operands compare
+        equal, then both operands are considered compare equal.
+      - otherwise, the two operands compare unequal.
+    - For strict equality comparison:
+      - the two operands `a` and `b` compare equal if and only if
+        the expression `a.equals(b) || b.equals(a)` evaluates to true,
+      - otherwise, the two operands compare unequal.
+  - if the corresponding methods of both objects are the same and thus compatible,
+    the object in the left-hand side of the comparison expression is used as
+    the `this` object, and the method is called with it and the other operand
+    as the only argument, and the return value is processed as follow:
+    - if the `equals()` method property was used, equality holds if and only if
+      the method returns true.
+    - if the `cmpwith()` method property was used loose equality holds if and
+      only if `a.cmpwith(b)` returns exactly 0; strict equality is not affeected
+      by this method and doesn't hold in this subcase.
+- If either operand is not an object, then they're compared under arithmetic
+  context, applying the order evaluation conversion when appropriate.
+
+To evaluate the ordering relation of 2 operands:
+- All functions are unordered with respect to each other.
+- Objects examined for the comparison method `cmpwith()`:
+  - if the corresponding methods are not the same function, or one is missing:
+    - `a > b` and `a >= b` are satisfied if
+      `a.cmpwith(b)` returns greater than 0 or if
+      `b.cmpwith(a)` returns less than 0,
+    - `a < b` and `a <= b` are satisfied if
+      `b.cmpwith(a)` returns greater than 0 or if
+      `a.cmpwith(b)` returns less than 0,
+    - `a <= b` and `a >= b` are satisfied if
+      `a.cmpwith(b)` or `b.cmpwith(a)` returns exactly 0,
+    - if none of the three cases are hit, then the comparison yields false.
+  - if the corresponding methods of both objects are the same and thus compatible,
+    the object in the left-hand side of the comparison expression is used as
+    the `this` object, and the method is called with it and the other operand
+    as the only argument, and the return value is processed as follow:
+    - if the `cmpwith()` method property was used:
+      - `a > b` and `a >= b` are satisfied if
+        `a.cmpwith(b)` returns greater than 0,
+      - `a < b` and `a <= b` are satisfied if
+        `a.cmpwith(b)` returns less than 0,
+      - `a <= b` and `a >= b` are satisfied if
+        `a.cmpwith(b)` returns exactly 0,
+    - if none of these cases and subcases are hit,
+      then the comparison yields false.
+- If either operand is not an object, then they're compared under arithmetic
+  context, applying the order evaluation conversion when appropriate.
+
+**Note**: The `equals()` method is never used for ordering relations including
+the `<=` and the `>=` operators because an object that's missing `cmpwith()`
+has no reasonable definition of ordering relations. Conversely, the `cmpwith()`
+method is not used with the strict equality test, because the ordering of objects
+doesn't necessarily reflect their identity.
 
 <?= hc_H2("Bitwise Operations") ?>
 
@@ -237,7 +313,7 @@ bit-or % bitxor
 - `bitxor`: The value is the bitwise exclusive-or of 2 operands.
 - `bitor`: The value is the bitwise inclusive-or of 2 operands.
 
-All of the bitwise operations occur under integer context.
+All of the bitwise operations are computed under integer context.
 
 <?= hc_H2("Boolean Logics") ?>
 

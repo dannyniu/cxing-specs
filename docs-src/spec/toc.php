@@ -40,15 +40,8 @@
  hcAddPages("a1-identifier-namespace");
 
  # Outstanding tasks:
- # 1. full object run-time interoperability across implementations,
- #    2025-07-30: made a page on ABI, WIP.
- #    2025-08-25: mostly complete, watch out for dust in silicon.
- # 2. declaration syntax, 2025-07-30: DONE.
- # 3. conditional and iterated statements. DONE
- # 4. statement labels. DONE
- # 5. finalizer.
- # 6. standard library.
- # 7 (2025-08-26). multi-threading and synchronization.
+ # 6. standard library - Done with a rationale of being incomplete.
+ # 7 (2025-08-26). multi-threading and synchronization - DONE 2025-11-14.
  # 8. idea for a "propagate" operator - the opposite of "fallback".
 
  hcFinish();

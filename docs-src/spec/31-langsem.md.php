@@ -214,23 +214,27 @@ Both `null` and `NaN` are considered nullish in coalescing operations.
 
 See <?= hcNamedSection("Numerics and Maths") ?> for furher discussion.
 
-Implicit Type and Value Conversion
-----
+<?= hc_H2("Implicit Type and Value Conversion") ?>
 
 Values and/or their types may be converted used under certain contexts:
 - The types `long` and `ulong` are collectively "integer context";
 - the type `double` is the "floating point context";
 - the types `long`, `ulong`, and `double` are collectively "arithmetic context".
 
+The "implicit type and value conversion" apply to multiple operands in such way
+that there's one common type (or special value) that is the same regardless of
+the order of the operands. This conversion is defined in terms of a binary
+operation that is associative and commutative, so that any binary expression
+operator that is associative and commutative preserve this property
+regardless of the types of the operands.
+
 Under a integer context:
-- the special value `null` have value 0,
 - all opaque objects have a single value of 1,
-- floating point values are converted by discarding fractional part, with the
-  behavior on overflow being UNSPECIFIED.
+- floating point real numbers are converted by discarding fractional part,
+- the conversion of infinities and NaN are UNSPECIFIED.
 
 Under the floating point context:
 - integers are converted preserving value to the extent allowed by precision.
-- the special value `null` is converted to `NaN`.
 - all opaque objects are converted to `+1.0`.
 
 Under arithmetic context:
@@ -238,8 +242,19 @@ Under arithmetic context:
 - operations involving only `long`s results in `long` operands;
 - operations involving `ulong` but not `double` results in `ulong` operands;
 - operations involving `double` results in `double`;
-- operations involving `null` are treated specially - if there are `double`,
-  the `null` is converted to `NaN`, otherwise, to 0 under integer context.
+
+The special value `null` is treated specially:
+- for operators that evaluates the order between operands, operands are
+  converted to `null`, which is neither less nor greater than any integer or
+  floating point number - this is known as the *order evaluation conversion*.
+- for operators that computes a value from operands, the `null` is converted
+  to the integer `0`, or if there're `double`, to `+0.0` -
+  this is known as the *value computation conversion*
+
+Operators shall document whether they evaluate the order of, or compute a
+value from operands. In general, operators that returns true/false predicate
+from arithmetic operands evaluates the order, while ones that computes a value
+would evaluate to arithmetic types.
 
 **Note**: The special value `NaN` always have type `double`.
 

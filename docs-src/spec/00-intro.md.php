@@ -6,7 +6,7 @@ The <?= langname() ?> Programming Language
   <?php system("git rev-parse HEAD") ?></small>
 
 <small style="display: block; text-align: left;">
-The 2025-11-(??14??) revision of the draft spec is a feature-complete beta,
+The 2025-11-14 revision of the draft spec is a feature-complete beta,
 and is ready to be implemented for testing</small>
 
 <?= hc_H1("Introduction") ?>
@@ -17,7 +17,7 @@ Goal
 
 The '<?= langname() ?>' programming language (with or without caps) is a
 general-purpose programming language with a C-like syntax that is
-memory-safe, aims to be thread-safe, and have suprise-free semantics.
+memory-safe, aims to be thread-safe, and have surprise-free semantics.
 It aims to have foreign interface with other programming languages,
 with C as its primary focus.
 
