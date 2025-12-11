@@ -119,7 +119,7 @@ are multiple characters.
 When double-quoted, the literal is a string literal having type `str`.
 
 *Raw string literals* have the following production:
-`\("[^"]*"|'[^']')`
+`\\("[^"]*"|'[^']')`
 
 In a raw string literal, there is no escape sequence. Single quotes cannot
 appear in single-quoted raw string literals, and double quotes cannot appear
