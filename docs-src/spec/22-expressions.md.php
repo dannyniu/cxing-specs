@@ -202,18 +202,6 @@ eq-expr % eqops
 ;
 ```
 
-- `eq`: True if left operand equals the right under arithmetic context;
-  or if one is `null`, the other is of the integer value 0.
-  False otherwise.
-- `ne`: True if left operand does not equal the right operand.
-  This includes the case where one operand is of integer values
-  other than 0 and the other is `null`. False otherwise.
-- `ideq`: True if left operand equals the right under arithmetic context;
-  or if both are `null`. False otherwise.
-- `idne`: True if left operand does not equal the right operand.
-  This includes the case where one operand is of the integer value 0
-  and the other is `null`. False otherwise.
-
 - `eq`: True if and only if both sides loosely compare equal. False otherwise.
 - `ne`: Equivalent to `!(<eq-expr> == <rel-expr>)`,
 - `ideq`: True if and only if both sides strictly compare equal. False otherwise.
@@ -240,8 +228,8 @@ To evaluate whether two operands are equal:
         equal, then both operands are considered compare equal.
       - otherwise, the two operands compare unequal.
     - For strict equality comparison:
-      - the two operands `a` and `b` compare equal if and only if
-        the expression `a.equals(b) || b.equals(a)` evaluates to true,
+      - if the value porper of the value native object of both operands compare
+        equal, then both operands are considered compare equal.
       - otherwise, the two operands compare unequal.
   - if the corresponding methods of both objects are the same and thus compatible,
     the object in the left-hand side of the comparison expression is used as
@@ -323,7 +311,7 @@ logic-and % logicand
 | logic-and "&&" bit-or % logicand
 ;
 
-logic-or % logicand
+logic-or % logicor
 : logic-and % degenerate
 | logic-or "||" logic-and % logicor
 | logic-or "??" logic-and % nullcoalesce
@@ -367,8 +355,6 @@ assign-expr % assignment
 | unary-expr "&=" assign-expr % andassign
 | unary-expr "^=" assign-expr % xorassign
 | unary-expr "|=" assign-expr % orassign
-| unary-expr "&&=" assign-expr % conjassign
-| unary-expr "||=" assign-expr % disjassign
 ;
 ```
 

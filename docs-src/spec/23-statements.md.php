@@ -37,7 +37,7 @@ flow-control-phrase % flowctrl
   return value being that of `expression`.
 
 ```
-control-flow-operator: % flowctrlop
+control-flow-operator % flowctrlop
 : "break" % break
 | "continue" % continue
 ;
@@ -166,7 +166,7 @@ in terms of "functional recursion", where "functional" is in the sense of the
 ```
 statement-list % stmtlist
 : statement ";" % base
-| statement-list statement ";" genrule
+| statement-list statement ";" % genrule
 ;
 ```
 

@@ -93,7 +93,7 @@ Characters and Strings
 ----
 
 *Character and string literals* have the following production:
-`?['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
+`['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
 
 In the 2nd subexpression, each alternative have the following meanings:
 1. Escaping
@@ -136,6 +136,6 @@ A punctuation is one of the following:
 ( ) [ ] =? . ++ -- + - ~ ! * / %
 << >> >>> < > & ^ |
 <= >= == != === !== && || ?? ? :
-= *= /= %= += -= <<= >>= >>>= &= ^= |= &&= ||= ,
+= *= /= %= += -= <<= >>= >>>= &= ^= |= ,
 ; { }
 ```

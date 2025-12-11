@@ -90,7 +90,9 @@ step 2.2. shall be a Morgoth, because there exists no diagnostic information.
   The object is passed as the `this` parameter, the key as the first parameter
   as a `val`, and the value as the value as the the second parameter as
   a value native object. See
-  <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>
+  <?= hcNamedSection("Calling Conventions and Foreign Function Interface") ?>.
+  The value of assignment expressions where the method call took place, is the
+  return value of the called method.
 - the new value is assigned to the identified key on the object,
   with the following exceptions:
 - if the write is a compound assignment (i.e. any assignment of form other
