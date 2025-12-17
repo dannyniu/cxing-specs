@@ -147,9 +147,9 @@ All of `addexpr` are computed under arithmetic context.
 ```
 bit-shift-expr % shiftexpr
 : add-expr % degenerate
-| bit-shift-expr << add-expr % lshift
-| bit-shift-expr >> add-expr % arshift
-| bit-shift-expr >>> add-expr % rshift
+| bit-shift-expr "<<" add-expr % lshift
+| bit-shift-expr ">>" add-expr % arshift
+| bit-shift-expr ">>>" add-expr % rshift
 ;
 ```
 

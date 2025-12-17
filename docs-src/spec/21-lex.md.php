@@ -29,7 +29,7 @@ A *keyword* is an identifier that matches one of the following:
 
 ```
 // Types:
-long ulong double val obj in out
+void long ulong double val obj in out
 
 // Special Values:
 true false null

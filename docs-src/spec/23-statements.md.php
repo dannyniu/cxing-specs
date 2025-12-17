@@ -11,23 +11,65 @@ provides flexibility in combining full expressions in way that wouldn't
 otherwise be expressive enough through expressions due to use of parentheses.
 
 ```
-primary-phrase % primaryphrase
-: expressions-list % degenerate
-| flow-control-phrase % flowctrl
+and-phrase-ion % and_phrase_ion
+: expressions-list "and" % exprlist
+| and-phrase-atom "and" % ionize
+;
+
+and-phrase-atom % and_phrase_atom
+: and-phrase-ion expressions-list % atomize
+;
+
+or-phrase-ion % or_phrase_ion
+: expressions-list "or" % exprlist_or
+| expressions-list "_Fallback" % exprlist_nullcoalesce
+| control-flow-operator "or" % op_or
+| control-flow-operator "_Fallback" % op_nullcoalesce
+| control-flow-operator label "or" % labelledop_or
+| control-flow-operator label "_Fallback" % labelledop_nullcoalesce
+| "return" "or" % returnnull_or
+| "return" "_Fallback" % returnnull_nullcoalesce
+| "return" expression "or" % returnexpr_or
+| "return" expression "_Fallback" % returnexpr_nullcoalesce
+| and-phrase-atom "or" % andphra_or
+| and-phrase-atom "_Fallback" % andphra_nullcoalesce
+| or-phrase-atom "or" % ionize_or
+| or-phrase-atom "_Fallback" % ionize_nullcoalesce
+;
+
+or-phrase-atom % or_phrase_atom
+: or-phrase-ion and-phrase-atom % atomize
+;
+
+seq-phrase-molecule % seq_phrase_atom
+: expressions-list ";" % exprlist
+| control-flow-operator ";" % op
+| control-flow-operator label ";" % labelledop
+| "return" ";" % returnnull
+| "return" expressions-list ";" % returnexpr
+| or-phrase-atom ";" % orphra
+;
+
+phrase-stmt % phrase_stmt
+: seq-phrase-molecule % degenerate
+| and-phrase-ion seq-phrase-molecule % andphra
+| or-phrase-ion seq-phrase-molecule % orphra
 ;
 ```
 
-- `degenerate`: The value of this phrase is that of the expression.
-- `flowctrl`: This phrase alters the normal control flow, it has no value.
-
-```
-flow-control-phrase % flowctrl
-: control-flow-operator % op
-| control-flow-operator label % labelledop
-| "return" % returnnull
-| "return" expression % returnexpr
-;
-```
+- `*_atom`: first, the ion is evaluated, if the result is `{STOP(value)}`,
+  then the value of this phrase atom is `value`, otherwise the 2nd term
+  (the `expressions-list` or the `and-phrase-atom`) is evaluated, and its
+  value is the value of the phrase.
+- `*_ion`: if the 1st term does not alter the control flow, then its value is
+  evaluated, then, depending on the last token in the rewrite sequence:
+  - if it's `"and"`, then `{CONTINUE}` is the result if the value is not `false`,
+  - if it's `"or"`, then `{CONTINUE}` is the result if the value is `false`,
+  - if it's `"_Fallback"`, then `{CONTINUE}` is the result if and only if
+    the value is nullish.
+  - otherwise, `{STOP(value)}`, with `value` being the evaluated value of the
+    1st term, becomes the result.
+- `exprlist*`: the value of this term is that of the expression.
 
 - `op`: Apply the flow-control operation to the inner-most applicable scope.
 - `labelledop`: Apply the flow-control operation to the labelled statement scope.
@@ -47,30 +89,13 @@ control-flow-operator % flowctrlop
 - `continue`: Skip the remainder of the applicable loop body and
   proceed to the next iteration.
 
-```
-and-phrase % andphrase
-: primary-phrase % degenerate
-| and-phrase "and" primary-phrase % conj
-;
-
-or-phrase % orphrase
-: and-phrase % degenerate
-| or-phrase "or" and-phrase % disj
-| or-phrase "_Fallback" and-phrase % nullcoalesce
-;
-```
-
-- `conj`: Refer to `logic-and`.
-- `disj`: Refer to `logic-or`.
-- `nullcoalesce`: Refer to `postfix-expr`.
-
 <?= hc_H1("Statements") ?>
 
 ```
 statement % stmt
 : ";" % emptystmt
 | identifier ":" statement % labelled
-| or-phrase ";" % phrase
+| phrase-stmt % phrase
 | conditionals % cond
 | while-loop % while
 | do-while-loop % dowhile
@@ -97,9 +122,9 @@ conditionals % condstmt
   executed due to no predicate evaluated to true, then `statement` is executed.
 
 ```
-predicated-cluase % predclause
+predicated-clause % predclause
 : "if" "(" expressions-list ")" statement % base
-| predicate-clause "elif" "(" expressions-list ")" statement % genrule
+| predicated-clause "elif" "(" expressions-list ")" statement % genrule
 ;
 ```
 
@@ -164,9 +189,9 @@ in terms of "functional recursion", where "functional" is in the sense of the
 <?= hc_H2("Statements List") ?>
 
 ```
-statement-list % stmtlist
-: statement ";" % base
-| statement-list statement ";" % genrule
+statements-list % stmtlist
+: statement % base
+| statements-list statement % genrule
 ;
 ```
 

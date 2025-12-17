@@ -21,17 +21,17 @@ type-keyword % typekw
 | "obj" % obj
 | "in" % in
 | "out" % out
-| "null" % null
+| "void" % void
 | "long" % long
 | "ulong" % ulong
 | "double" % double
 ;
 ```
 
-There is no semantic differenciation among type keywords except `null` - all of
+There is no semantic differenciation among type keywords except `void` - all of
 the other keywords are represented as a value native object.
 
-The type keyword of the parameters MUST NOT be `null`. The type keyword of the
+The type keyword of the parameters MUST NOT be `void`. The type keyword of the
 return value (i.e. the 2nd term in the `subr` and `method` production) can be
 any of the allowed type keywords.
 
@@ -40,6 +40,10 @@ arguments and return values are not enforced at all, the presence of the keyword
 however is a syntactic requirement to disambiguate argument list from
 parenthesised expressions list, and to provide annotation to the semantic of
 parameters.
+
+**Note**: Before 2025-12-16, the type keyword `void` was `null` - this caused
+interpretation conflict between the type keyword and the special value, and is
+therefore changed.
 
 When the function body is `emptystmt`, the `function-declaration` declares a
 function; when it's `brace`, it defines a function. The `this` keyword MUST NOT
