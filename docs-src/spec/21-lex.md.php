@@ -14,9 +14,10 @@ identically under both semantics.
 Comments
 ----
 
-Comments in the language begin with 2 forward slashses: `//`, and span towards
-the end of the line. Another form of comments exists, where it begins with `/*`
-and ends with `*/` - this form of comment can span multiple lines.
+Comments in the language begin with 2 forward slashses: `//`, or 1 hash
+sign: `#`, and span towards the end of the line. Another form of comments
+exists, where it begins with `/*` and ends with `*/` - this form of comment
+can span multiple lines.
 
 Comments in the following explanatory code blocks use the same notation as in
 the actual language.
@@ -57,8 +58,17 @@ Numbers
 When the literal has the "U" suffix, the literal has type `ulong`, otherwise,
 the literal has type `long`.
 
-*Octal integer literals* have the following production: `0[0-7]*`. An octal
+*Octal integer literals* have the following production: `0o?[0-7]*`. An octal
 literal always has type `ulong`.
+
+**Note**: As it had been a common mistake in newcomers to zero-pad a decimal
+number only to realize it's become an octal literal, it is recommended that
+implementations issue warnings when a number is zero-padded and recommend user
+to prefix the literal with `0o` when they do intend to use octals. Likewise,
+for some functions (e.g. `chmod` in POSIX), users may actually _DO_ intend to
+use octals when they forget to zero-prefix them to become octal literals - in
+these cases, it is recommended that semantic analysis be performed using syntax
+information (if possible) and appropriate warnings be given.
 
 *Hexadecimal integer literals* have
 the following production: `0[xX][0-9a-fA-F]+`.
@@ -93,7 +103,7 @@ Characters and Strings
 ----
 
 *Character and string literals* have the following production:
-`['"]([^\]|\\(["'abfnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
+`['"]([^\]|\\(["'abefnrtv]|x[0-9a-fA-F]{2,2}|[0-7]{1,3}))['"]`
 
 In the 2nd subexpression, each alternative have the following meanings:
 1. Escaping
@@ -101,6 +111,7 @@ In the 2nd subexpression, each alternative have the following meanings:
      and don't delimit the literal.
    - 'a' indicates the `BEL` ASCII 'bell' control character,
    - 'b' indicates the `BS` ASCII backspace character,
+   - 'e' indicates the `ESC` ASCII escape character,
    - 'f' indicates the `FF` ASCII form-feed character,
    - 'n' indicates the `LF` ASCII line-feed character,
    - 'r' indicates the `CR` ASCII carriage return character,
@@ -126,6 +137,12 @@ appear in single-quoted raw string literals, and double quotes cannot appear
 in double-quoted raw string literals.
 
 Raw string literals are primarily intended for writing regular expressions.
+
+Any number of raw string and double-quoted string may be concatenated into one
+string object by virtue of them being placed in adjacency with no character
+in between other than whitespaces. The set of whitespace characters are defined
+to be exactly the following: U+0020 (space), U+000D (carriage return),
+U+000B (vertical tab), U+000A (line-feed), U+0009 (horizontal tab).
 
 Punctuations
 ----

@@ -1,5 +1,4 @@
-<a id="features">Features</a>
-====
+<?= hc_H1("Features") ?>
 
 To best reflect the intent of the design, the specification shall be
 programmer-oriented. The purpose of features will be explained, with examples
@@ -77,7 +76,7 @@ can be written
 in <?= langname() ?> as:
 
 ```
-subr null continued_fraction(val N, val a, val b, val x, obj p)
+subr void continued_fraction(val N, val a, val b, val x, obj p)
 {
     decl f, f1, d, d1, pd1, q;
     decl j;
