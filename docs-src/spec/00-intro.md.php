@@ -18,8 +18,9 @@ Goal
 The '<?= langname() ?>' programming language (with or without caps) is a
 general-purpose programming language with a C-like syntax that is
 memory-safe, aims to be thread-safe, and have surprise-free semantics.
-It aims to have foreign interface with other programming languages,
-with C as its primary focus.
+It aims to <del data-date="2025-12-21">have foreign interface</del>
+<ins data-date="2025-12-21">achieve binary compatibility</ins> with
+other programming languages, with C as its primary focus.
 
 It attempts to pioneer in the field of efficient, expressive, and robust
 error handling using language design toolsets.
@@ -35,7 +36,7 @@ which will serve as instrument of verification for additional implementations.
 The version of the language (if it ever changes) will be independent of the
 versions of the implementations.
 
-The [Features](#features) section has more information
+The see section <?= hcNamedSection("Features") ?> for more information
 on how the goals are achieved.
 
 Naming
