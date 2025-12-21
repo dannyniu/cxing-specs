@@ -12,8 +12,10 @@ otherwise be expressive enough through expressions due to use of parentheses.
 
 ```
 and-phrase-ion % and_phrase_ion
-: expressions-list "and" % exprlist
-| and-phrase-atom "and" % ionize
+: expressions-list "and" % exprlist_and
+| expressions-list "_Then" % exprlist_then
+| and-phrase-atom "and" % ionize_and
+| and-phrase-atom "_Then" % ionize_then
 ;
 
 and-phrase-atom % and_phrase_atom
@@ -65,6 +67,7 @@ phrase-stmt % phrase_stmt
   evaluated, then, depending on the last token in the rewrite sequence:
   - if it's `"and"`, then `{CONTINUE}` is the result if the value is not `false`,
   - if it's `"or"`, then `{CONTINUE}` is the result if the value is `false`,
+  - if it's `"_Then"`, then `{CONTINUE}` is the result if the value is not nullish.
   - if it's `"_Fallback"`, then `{CONTINUE}` is the result if and only if
     the value is nullish.
   - otherwise, `{STOP(value)}`, with `value` being the evaluated value of the

@@ -181,7 +181,7 @@ used interchangeably; now finalize refer to that of resource and destroy refer
 to that of values (i.e. the concept of value native objects).
 
 ```
-subr null cxing_gc();
+subr void cxing_gc();
 ```
 
 The `cxing_gc` foreign function invokes the garbage collection process.

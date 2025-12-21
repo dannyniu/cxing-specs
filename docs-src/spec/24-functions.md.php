@@ -2,8 +2,8 @@
 
 ```
 function-declaration % funcdecl
-: "subr" type-keyword identifier arguments-list statement % subr
-| "method" type-keyword identifier arguments-list statement % method
+: "subr" operand-attr identifier arguments-list statement % subr
+| "method" operand-attr identifier arguments-list statement % method
 ;
 
 arguments-list % arglist
@@ -12,11 +12,11 @@ arguments-list % arglist
 ;
 
 arguments-begin % args
-: "(" type-keyword identifier % base
-| arguments-begin "," type-keyword identifier % genrule
+: "(" operand-attr identifier % base
+| arguments-begin "," operand-attr identifier % genrule
 ;
 
-type-keyword % typekw
+operand-attr % opattr
 : "val" % val
 | "obj" % obj
 | "in" % in
@@ -28,22 +28,23 @@ type-keyword % typekw
 ;
 ```
 
-There is no semantic differenciation among type keywords except `void` - all of
-the other keywords are represented as a value native object.
+There is no semantic differenciation among operand attributes - all of the
+operands types are represented as a value native object.
 
-The type keyword of the parameters MUST NOT be `void`. The type keyword of the
-return value (i.e. the 2nd term in the `subr` and `method` production) can be
-any of the allowed type keywords.
+The operand attribute of the parameters MUST NOT be `void`. The operand attribute
+of the return value (i.e. the 2nd term in the `subr` and `method` production)
+can be any of the allowed operand attributes.
 
 Because <?= langname() ?> is a dynamically typed language, the type of the
-arguments and return values are not enforced at all, the presence of the keywords
-however is a syntactic requirement to disambiguate argument list from
-parenthesised expressions list, and to provide annotation to the semantic of
-parameters.
+arguments and return values are not enforced at all, the presence of
+operand attributes however is a syntactic requirement to disambiguate argument
+list from parenthesised expressions list, and to provide annotation to the
+semantic of parameters.
 
 **Note**: Before 2025-12-16, the type keyword `void` was `null` - this caused
 interpretation conflict between the type keyword and the special value, and is
-therefore changed.
+therefore changed. After 2025-12-21, "type keywords" are renamed to "operand
+attributes"
 
 When the function body is `emptystmt`, the `function-declaration` declares a
 function; when it's `brace`, it defines a function. The `this` keyword MUST NOT

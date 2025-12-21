@@ -26,7 +26,7 @@ gift(exclusiveObj) := {
   method val __get__(),
   method val __set__(),
   method val __copy__(),
-  method null __final__(),
+  method void __final__(),
 }
 ```
 
@@ -113,7 +113,7 @@ thrd_hnd(obj) := {
 
 subr thrd_hnd thrd_create(val thrd_entry, val thrd_param);
 subr thrd_hnd thrd_self();
-subr null thrd_exit();
+subr void thrd_exit();
 ```
 
 The `thrd_create()` function creates a thread with the `thrd_entry` as its

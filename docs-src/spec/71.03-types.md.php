@@ -10,7 +10,7 @@ dict_inst(obj) := {
   method val __get__(val k),
   method val __set__(val k, val v),
   method val __copy__(),
-  method null __final__(),
+  method void __final__(),
   method val __unset__(val k),
   method val __initset__(val k, val v),
   method dict_key_snapshot __keys__(),
@@ -19,7 +19,7 @@ dict_inst(obj) := {
 dict_key_snapshot(obj) := {
   method val __get__(val k),
   method val __copy__(),
-  method null __final__(),
+  method void __final__(),
 }
 ```
 
