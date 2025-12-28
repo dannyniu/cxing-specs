@@ -2,8 +2,8 @@
 
 ```grammar
 function-declaration % funcdecl
-: "subr" operand-attr arguments-list statement % subr
-| "method" operand-attr arguments-list statement % method
+: "subr" identifier arguments-list statement % subr
+| "method" identifier arguments-list statement % method
 ;
 
 arguments-list % arglist
