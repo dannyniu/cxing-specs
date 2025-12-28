@@ -7,26 +7,18 @@
 <?= hc_H2("Exclusive and Sharable Objects and Mutices (Mutex)") ?>
 
 ```
-sharableObj(obj) := {
-  // Sharable objects may be used across threads
-}
-exclusiveObj(obj) := {
-  // Exclusive objects have more efficient implementations than
-  // sharable objects, but the behavior is undefined when used
-  // in multiple threads.
-}
+// - Sharable objects may be used across threads
+// - Exclusive objects have more efficient implementations than
+//   sharable objects, but the behavior is undefined when used
+//   in multiple threads.
 
-subr mutex_inst mutex(val v);
-
-mutex_inst(sharableObj) := {
-  method gift acquire(),
-}
-
-gift(exclusiveObj) := {
-  method val __get__(),
-  method val __set__(),
-  method val __copy__(),
-  method void __final__(),
+[subr mutex(v)] := {
+  [method acquire()] := {
+    method __get__(),
+    method __set__(),
+    method __copy__(),
+    method __final__(),
+  },
 }
 ```
 
@@ -68,12 +60,10 @@ potential resources used by the value protected by the mutex and the mutex itsel
 <?= hc_H2("Condition Variables") ?>
 
 ```
-subr condvar_inst condvar(mutex_inst mtx);
-
-condvar_inst(sharableObj) := {
-  method exclusiveObj wait(),
-  method long broadcast(),
-  method long signal(),
+[subr condvar(mtx)]  := {
+  method wait(),
+  method broadcast(),
+  method signal(),
 }
 ```
 
@@ -105,20 +95,17 @@ efficient than `broadcast()` when there's only 1 waiting thread.
 <?= hc_H2("Thread Management") ?>
 
 ```
-thrd_hnd(obj) := {
-  method val join();
-  method val detach();
-  method bool equals(thrd_hnd t2);
+[subr thrd_create(thrd_entry, thrd_param) | subr thrd_self()] := {
+  method join();
+  method detach();
+  method equals(thrd_hnd t2);
 }
-
-subr thrd_hnd thrd_create(val thrd_entry, val thrd_param);
-subr thrd_hnd thrd_self();
-subr void thrd_exit();
+subr thrd_exit();
 ```
 
 The `thrd_create()` function creates a thread with the `thrd_entry` as its
 entry point, and `thrd_param` as its first and only argument. `thrd_entry`
-must be a subroutine. Its return type is `null`. On success, a `thrd_hnd`
+MUST be a subroutine. Its return type is `null`. On success, a `thrd_hnd`
 thread handle is returned, otherwise, `null` is returned.
 
 The `thrd_self()` function returns the thread handle corresponding to the

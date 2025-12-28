@@ -29,9 +29,6 @@ An *identfier* has the following production: `[_[:alpha:]][_[:alnum:]]*`.
 A *keyword* is an identifier that matches one of the following:
 
 ```
-// Types:
-void long ulong double val obj in out
-
 // Special Values:
 true false null
 
@@ -48,7 +45,7 @@ if else elif while do for
 subr method this
 
 // Translation Unit Interface:
-_Include extern
+_Include extern const
 ```
 
 Numbers

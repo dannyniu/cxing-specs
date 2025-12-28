@@ -118,6 +118,40 @@ When a key is being deleted from an object:
 **Note**: Destruction of values and finalization of resources are further
 discussed in <?= hcNamedSection("Finalization and Garbage Collection") ?>.
 
+<?= hc_H2("Automatic Resource Management") ?>
+
+**Note**: This section is added 2025-12-28, and explicitly defines when resource
+management methods are invoked.
+
+As mentioned before, lvalues have scopes. Precisely, for an lvalue:
+- if it's declared in a block, its scope begins there towards the end of
+  the block (i.e. the enclosing brace),
+- if it's the member of an object, its scope is the object,
+
+A transient lvalue is an lvalue that's not declared in the scope where it's used.
+The following rules govern how automatic resource management occurs:
+- When a value is being assigned to a scope, be it an object member, or a
+  declared variable, it's `__copy__`'d.
+- When a value, whether lvalue or not, goes out of scope, unless it's a
+  transient lvalue, it's `__final__`'d.
+
+**Note**: The reasoning behind the above rules governing automatic resource
+management is as follow:
+- Every scope _owns_ some entities, and _borrows_ some entities elsewhere,
+  together, this constitutes the objects under computation in this scope.
+  When the scope ends, the _owned_ entities must be finalized, whereas
+  the _borrowed_ ones must not.
+- The declared variables are clearly owned entities for a scope.
+- Some entities do not get assigned to declared variables, and thus transient.
+  some are lvalues and some are not.
+  - Because transient lvalues are clearly not declared in the current scope,
+    they should not be finalized when the scope ends.
+  - Other transient values are not owned by or visible to other scopes,
+    therefore they also need to be finalized.
+- Lvalues must have a scope by definition, and therefore owned by it.
+- Because the scope of transient lvalues don't change, when another scope is to
+  own that value, it must be copied.
+
 <?= hc_H2("Subroutines and Methods") ?>
 
 Both *subroutines* and *methods* are codes that can be executed in the
@@ -151,7 +185,8 @@ which resulted in the introduction of type-associated properties.
 And so `this` parameter is received as a `val` in all (currently one) type(s)
 of methods. Still, to facilitate the correct passing of parameters, it
 necessitates the distinction between methods and subroutines.
-As of 2025-10-27, the `ref` argument type is removed entirely.
+As of 2025-10-27, the `ref` argument type is removed entirely,
+further as of 2025-12-26, operand types' annotations are eliminated altogether.
 
 <?= hc_H1("Types and Special Values") ?>
 

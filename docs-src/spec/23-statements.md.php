@@ -10,7 +10,7 @@ operators binds more tightly than phrase delimiters. On the other hand, phrases
 provides flexibility in combining full expressions in way that wouldn't
 otherwise be expressive enough through expressions due to use of parentheses.
 
-```
+```grammar
 and-phrase-ion % and_phrase_ion
 : expressions-list "and" % exprlist_and
 | expressions-list "_Then" % exprlist_then
@@ -81,7 +81,7 @@ phrase-stmt % phrase_stmt
 - `returnexpr`: Terminates the executing function with
   return value being that of `expression`.
 
-```
+```grammar
 control-flow-operator % flowctrlop
 : "break" % break
 | "continue" % continue
@@ -94,7 +94,7 @@ control-flow-operator % flowctrlop
 
 <?= hc_H1("Statements") ?>
 
-```
+```grammar
 statement % stmt
 : ";" % emptystmt
 | identifier ":" statement % labelled
@@ -114,7 +114,7 @@ statement % stmt
 
 <?= hc_H2("Condition Statements") ?>
 
-```
+```grammar
 conditionals % condstmt
 : predicated-clause % base
 | predicated-clause "else" statement % else
@@ -124,7 +124,7 @@ conditionals % condstmt
 - `else`: Executes `predicated-clause`, if none of its statement(s) were
   executed due to no predicate evaluated to true, then `statement` is executed.
 
-```
+```grammar
 predicated-clause % predclause
 : "if" "(" expressions-list ")" statement % base
 | predicated-clause "elif" "(" expressions-list ")" statement % genrule
@@ -141,7 +141,7 @@ predicated-clause % predclause
 
 <?= hc_H2("Loops") ?>
 
-```
+```grammar
 while-loop % while
 : "while" "(" expressions-list ")" statement % rule
 ;
@@ -150,7 +150,7 @@ while-loop % while
 - `rule`: To execute `rule`, evaluate `expressions-list`, if it's true,
   then execute `statement` and then execute `rule`.
 
-```
+```grammar
 do-while-loop % dowhile
 : "do" "{" statements-list "}" "while" "(" expressions-list ")" ";" % rule
 ;
@@ -159,7 +159,7 @@ do-while-loop % dowhile
 - `rule`: To execute `rule`, execute `statements-list`, then evaluate
   `expressions-list`, if it's true, then execute `rule`.
 
-```
+```grammar
 for-loop % for
 : "for" "(" expressions-list ";"
             expressions-list ";"
@@ -191,7 +191,7 @@ in terms of "functional recursion", where "functional" is in the sense of the
 
 <?= hc_H2("Statements List") ?>
 
-```
+```grammar
 statements-list % stmtlist
 : statement % base
 | statements-list statement % genrule
@@ -209,7 +209,7 @@ needs to hold type information, as such, variables are represented conceptually
 as "lvalue" native objects. (Actually, just value native objects, as their
 scope and key can be deduced from context.)
 
-```
+```grammar
 declaration % decl
 : "decl" identifier % singledecl
 | "decl" identifier "=" assign-expr % signledeclinit

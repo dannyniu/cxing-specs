@@ -2,7 +2,7 @@
 
 <?= hc_H2("Grouping, Postifix, and Unaries.") ?>
 
-```
+```grammar
 primary-expr % primary
 : "(" expressions-list ")" % paren
 | identifier % ident
@@ -14,7 +14,7 @@ primary-expr % primary
 - `ident`: The value is whatever stored in the identifier.
 - `const`: The value is that represented by the constant.
 
-```
+```grammar
 postfix-expr % postfix
 : primary-expr % degenerate
 | postfix-expr "=?" primary-expr % nullcoalesce
@@ -51,7 +51,7 @@ receives the value of or a reference to the left-hand of the operator. This is
 tentative and no commitment over this had been made yet. All in all, the
 close-binding null-coalescing operator is now `=?`. (Note dated 2025-09-26.)
 
-```
+```grammar
 unary-expr % unary
 : postfix-expr % degenerate
 | "++" unary-expr % inc
@@ -82,7 +82,7 @@ the operation are computed under integer context.
 
 <?= hc_H2("Arithmetic Binary Operations") ?>
 
-```
+```grammar
 mul-expr % mulexpr
 : unary-expr % degenerate
 | mul-expr "*" unary-expr % multiply
@@ -128,7 +128,7 @@ supposedly unintentional from the standard developer's perspective.
 
 All of `mulexpr` are computed under arithmetic context.
 
-```
+```grammar
 add-expr % addexpr
 : mul-expr % degenerate
 | add-expr "+" mul-expr % add
@@ -144,7 +144,7 @@ All of `addexpr` are computed under arithmetic context.
 
 <?= hc_H2("Bit Shifting Operations") ?>
 
-```
+```grammar
 bit-shift-expr % shiftexpr
 : add-expr % degenerate
 | bit-shift-expr "<<" add-expr % lshift
@@ -170,7 +170,7 @@ library method functions.
 
 <?= hc_H2("Arithmetic Relations") ?>
 
-```
+```grammar
 rel-expr % relops
 : bit-shift-expr % degenerate
 | rel-expr "<" bit-shift-expr % lt
@@ -192,7 +192,7 @@ rel-expr % relops
 All of the ordering relations of `relops` are evaluated under arithmetic context.
 If either operand is NaN or null, then the value of the expression is false.
 
-```
+```grammar
 eq-expr % eqops
 : rel-expr % degenerate
 | eq-expr "==" rel-expr % eq
@@ -280,7 +280,7 @@ doesn't necessarily reflect their identity.
 
 <?= hc_H2("Bitwise Operations") ?>
 
-```
+```grammar
 bit-and % bitand
 : eq-expr % degenerate
 | bit-and "&" eq-expr % bitand
@@ -305,7 +305,7 @@ All of the bitwise operations are computed under integer context.
 
 <?= hc_H2("Boolean Logics") ?>
 
-```
+```grammar
 logic-and % logicand
 : bit-or % degenerate
 | logic-and "&&" bit-or % logicand
@@ -328,7 +328,7 @@ logic-or % logicor
 
 <?= hc_H2("Compounds") ?>
 
-```
+```grammar
 cond-expr % tenary
 : logic-or % degenerate
 | logic-or "?" expressions-list ":" cond-expr % tenary
@@ -340,7 +340,7 @@ cond-expr % tenary
   otherwise, `cond-expr` is evaluated;
   The result is whichever `expressions-list` or `cond-expr` evaluated.
 
-```
+```grammar
 assign-expr % assignment
 : cond-expr % degenerate
 | unary-expr "=" assign-expr % directassign
@@ -363,7 +363,7 @@ assign-expr % assignment
 
 See <?= hcNamedSection("Object/Value Key Access") ?> for further discussion.
 
-```
+```grammar
 expressions-list % exprlist
 : assign-expr % degenerate
 | expressions-list "," assign-expr % exprlist

@@ -5,27 +5,28 @@
 
 ```
 str(val) := {
-  method long len(),
-  method str trunc(ulong newlength),
-  method str putc(long c),
-  method str puts(str s),
-  method str putfin(),
-  method long cmpwith(str s2), // efficient byte-wise collation.
-  method bool equals(str s2), // constant-time, cryptography-safe.
-  method structureddata map(obj structlayout),
+  method len(),
+  method trunc(newlength),
+  method putc(c),
+  method puts(s),
+  method putfin(),
+  method cmpwith(s2), // efficient byte-wise collation.
+  method equals(s2), // constant-time, cryptography-safe.
+  method map(structlayout),
 };
 
 structureddata(obj) := {
-  method bool unmap(),
+  method unmap(),
 }
 ```
 
-The string type `str` is a sequence of bytes.
+The string type `str` is a sequence of bytes. Some APIs may expect nul-terminated
+strings, and would ignore any byte after the first nul byte.
 
-A string has a *length* that's reported by the `len()` function,
+A string has a *length* that's reported by the `len()` function as a `long`,
 and can be altered using the `trunc()` function.
 
-The `putc()` function can be used to append a byte whose integer value is
+The `putc()` function can be used to append a byte whose _integer_ value is
 specified by `c`, to the end of the string; the `puts()` function can be
 used to append another string to the end; both `putc()` and `puts()` may
 buffer the input on the working context of the string, such buffer need to be
@@ -39,7 +40,7 @@ The `cmpwith()` returns less than, equal to, or greater than 0 if the string is
 less than, the same as, or greater than `s2`. The strict prefix of a string is
 less than the string to which it's a prefix of.
 
-The `equals()` function returns `true` if the string equals `s2` and false
+The `equals()` function returns `true` if the string equals `s2` and `false`
 otherwise. If the 2 strings are of the same length, it is guaranteed that
 the comparison is done without cryptographically exploitable time side-channel.
 
@@ -47,7 +48,7 @@ The `map()` function creates an object that is a parsed representation of the
 underlying data structure. This object can be used to modify the memory backing
 of the data structure if the corresponding memory backing is writable. The
 memory backing is writable by default, and the circumstances under which it's
-not is implementation-defined.
+not writable is implementation-defined.
 
 The `unmap()` function unmaps the parsed representation, thus making it
 no longer usable, and returns `true`. The variable can then only be finalized

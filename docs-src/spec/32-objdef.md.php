@@ -26,7 +26,7 @@ with `namedtuple` being sort of a meta.
 A type object contains an method property named `__initset__` declared as follow:
 
 ```
-method val __initset__(val key, val value);
+method __initset__(key, value);
 ```
 
 **Note** The parameters of the `__initset__` method property were changed from
@@ -34,9 +34,10 @@ method val __initset__(val key, val value);
 so it doesn't make sense to have references to them. Other issue is that, there
 haven't been a way to signify the end of list. This is now changed to use the
 setting of the existing `__proto__` property to the type object for signifying
-the end-of-list. As of 2025-10-27, the `ref` argument type is removed completely.
+the end-of-list. As of 2025-10-27, the `ref` argument type is removed completely,
+further as of 2025-12-26, operand types' annotations are eliminated altogether.
 
-```
+```grammar
 objdef-start % objdefstart
 : objdef-start-comma % comma
 | objdef-start-nocomma % nocomma

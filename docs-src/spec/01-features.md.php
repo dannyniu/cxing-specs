@@ -76,7 +76,7 @@ can be written
 in <?= langname() ?> as:
 
 ```
-subr void continued_fraction(val N, val a, val b, val x, obj p)
+subr continued_fraction(N, a, b, x, out)
 {
     decl f, f1, d, d1, pd1, q;
     decl j;
@@ -92,8 +92,8 @@ subr void continued_fraction(val N, val a, val b, val x, obj p)
         pd1 = d1;
         f = a[j] + q;
     }
-    p.f = f;
-    p.f1 = f1;
+    out.f = f;
+    out.f1 = f1;
 }
 ```
 

@@ -12,21 +12,17 @@ decl half, float, double; // binary16, binary32, binary64.
 // decl _Decimal32, _Decimal64; // not supported yet.
 // decl huge, uhuge, quad, _Decimal128; // too large.
 
-struct_inst(obj) := {
-  method val __initset__(val key, val value),
+[subr struct()] := {
+  method __initset__(key, value),
 };
 
-packed_inst(obj) := {
-  method val __initset__(val key, val value),
+[subr packed()] := {
+  method __initset__(key, value),
 };
 
-union_inst(obj) := {
-  method val __initset__(val key, val value),
+[subr union()] := {
+  method __initset__(key, value),
 };
-
-subr struct_inst struct();
-subr packed_inst packed();
-subr union_inst union();
 ```
 
 The representations for `char`, `byte`, `short`, `ushort`, `int`, `uint`,

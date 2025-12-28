@@ -5,16 +5,13 @@
 > part of "The Regex Module" must be implemented in their entirity.
 
 ```
-RegExp(obj) := {
+[bre_comp(regex, cflags) | ere_comp(regex, cflags)] := {
   // An opaque object representing a compiled regular expression.
-  method obj split(str subject);
-  method bool match(str subject);
-  method obj capture(str subject);
-  method str replace(str subject, str replacement, long limit);
-}
-
-subr RegExp bre_comp(str regex, long cflags);
-subr RegExp ere_comp(str regex, long cflags);
+  method split(subject);
+  method match(subject);
+  method capture(subject);
+  method replace(subject, replacement, limit);
+};
 ```
 
 The `bre_comp()` and `ere_comp()` functions compiles a regular expression based

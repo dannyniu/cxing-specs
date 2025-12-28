@@ -181,7 +181,7 @@ used interchangeably; now finalize refer to that of resource and destroy refer
 to that of values (i.e. the concept of value native objects).
 
 ```
-subr void cxing_gc();
+subr cxing_gc();
 ```
 
 The `cxing_gc` foreign function invokes the garbage collection process.
@@ -206,11 +206,7 @@ releases the resources used by the value before the destruction of the value.
 
 Although the `__copy__` and `__final__` properties are not required to be
 type-associated, but because they manipulate resources that're opaque to the
-language, they usually need to be implemented as type-associated.
-
-**Outstanding**: Provision may be made in the future allowing these properties
-to be extended by the program, or equivalent capability be provided. There is
-no commitment over this at the moment however.
+language, they're almost always implemented as type-associated.
 
 **Note**: Primitive types such as `long`, `ulong`, and `double` may not need
 a `__copy__` method - runtime recognizing these sort of types may copy them

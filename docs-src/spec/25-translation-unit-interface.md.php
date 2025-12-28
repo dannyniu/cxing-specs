@@ -28,6 +28,7 @@ entity-declaration % entdecl
 : "_Include" string-literal ";" % srcinc
 | "extern" function-declaration % extern
 | function-declaration % implicit
+| "const" identifier constant ";" % constdef
 ;
 ```
 
@@ -57,3 +58,9 @@ system.) If the header isn't found in the pre-defined paths, then it's searched
 relative to the path of the source code file. However, if the string literal
 naming the header file begins with `./` or `../`, then it's first searched
 relative to the path of the source code file, then the pre-defined set of paths.
+
+<?= hc_H2("Constants Definition") ?>
+
+The `const` keyword can be used to define symbolic constants. The type of the
+constant MUST be one of `long`, `ulong`, or `double`. Once the constant is
+defined, the identifier may be used later to substitute the defined value.

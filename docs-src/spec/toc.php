@@ -13,18 +13,18 @@
  // Good < Ok < DONE.
 
  // Intro //
- hcAddPages("00-intro"); # Ok(2025-07-31).
- hcAddPages("01-features"); # Ok(2025-07-31).
+ hcAddPages("00-intro");
+ hcAddPages("01-features");
 
  // Language //
  hcAddPages("21-lex");
- hcAddPages("22-expressions"); # Good(2025-08-25).
- hcAddPages("23-statements"); # Good(2025-07-31), Ok(2025-08-25).
+ hcAddPages("22-expressions");
+ hcAddPages("23-statements");
  hcAddPages("24-functions");
  hcAddPages("25-translation-unit-interface");
- hcAddPages("31-langsem"); # Pending.
- hcAddPages("32-objdef"); # Good(2025-07-31), Revised(2025-10-02), Still WIP.
- hcAddPages("33-numerics"); # Good(2025-08-26).
+ hcAddPages("31-langsem");
+ hcAddPages("32-objdef");
+ hcAddPages("33-numerics");
  hcAddPages("34-rtsem");
 
  // Standard Library //

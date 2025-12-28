@@ -7,7 +7,7 @@ Rounding Mode
 not yet ultimately decided, and may change over time.
 
 ```
-subr long fpmode(long mode);
+subr fpmode(mode);
 ```
 
 Returns the currently active rounding mode. If mode is one of the supported
@@ -49,28 +49,28 @@ not yet ultimately decided, and may change over time.
 
 ```
 // Tests for exceptions
-subr bool fptestinval(); // **invalid**
-subr bool fptestpole(); // **division-by-zero**
-subr bool fptestoverf(); // **overflow**
-subr bool fptestunderf(); // **underflow**
-subr bool fptestinexact(); // **inexact**
+subr fptestinval(); // **invalid**
+subr fptestpole(); // **division-by-zero**
+subr fptestoverf(); // **overflow**
+subr fptestunderf(); // **underflow**
+subr fptestinexact(); // **inexact**
 
 // Clears exceptions
-subr bool fpclearinval(); // **invalid**
-subr bool fpclearpole(); // **division-by-zero**
-subr bool fpclearoverf(); // **overflow**
-subr bool fpclearunderf(); // **underflow**
-subr bool fpclearinexact(); // **inexact**
+subr fpclearinval(); // **invalid**
+subr fpclearpole(); // **division-by-zero**
+subr fpclearoverf(); // **overflow**
+subr fpclearunderf(); // **underflow**
+subr fpclearinexact(); // **inexact**
 
 // Sets exceptions
-subr bool fpsetinval(); // **invalid**
-subr bool fpsetpole(); // **division-by-zero**
-subr bool fpsetoverf(); // **overflow**
-subr bool fpsetunderf(); // **underflow**
-subr bool fpsetinexact(); // **inexact**
+subr fpsetinval(); // **invalid**
+subr fpsetpole(); // **division-by-zero**
+subr fpsetoverf(); // **overflow**
+subr fpsetunderf(); // **underflow**
+subr fpsetinexact(); // **inexact**
 
 // Exceptions state.
-subr long fpexcepts(long excepts);
+subr fpexcepts(excepts);
 ```
 
 The `fptest*`, `fpclear*`, and `fpset*` functions tests, clears, and sets the
