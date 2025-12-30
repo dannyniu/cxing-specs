@@ -128,15 +128,20 @@ As mentioned before, lvalues have scopes. Precisely, for an lvalue:
   the block (i.e. the enclosing brace),
 - if it's the member of an object, its scope is the object,
 
-A transient lvalue is an lvalue that's not declared in the scope where it's used.
+A _transient lvalue_ is an _lvalue_ that's not declared in the scope where it's used.
 The following rules govern how automatic resource management occurs:
-- When a value is being assigned to a scope, be it an object member, or a
+- When a value that is not an lvalue (hence _rvalue_) _initially occurs_,
+  it for once becomes its own copy.
+- When a value is being _assigned to a scope_, be it an object member, or a
   declared variable, it's `__copy__`'d.
-- When a value, whether lvalue or not, goes out of scope, unless it's a
-  transient lvalue, it's `__final__`'d.
+- When a value, whether an lvalue or an rvalue, _goes out of scope_,
+  unless it's a transient lvalue, it's `__final__`'d.
 
 **Note**: The reasoning behind the above rules governing automatic resource
 management is as follow:
+- When a value gets created (i.e. initially occurs), conceptually it has a
+  reference count of 1 - this includes the case of both the value is actually
+  created AND when an rvalue results from an lvalue e.g. in an assignment expression.
 - Every scope _owns_ some entities, and _borrows_ some entities elsewhere,
   together, this constitutes the objects under computation in this scope.
   When the scope ends, the _owned_ entities must be finalized, whereas
@@ -151,6 +156,30 @@ management is as follow:
 - Lvalues must have a scope by definition, and therefore owned by it.
 - Because the scope of transient lvalues don't change, when another scope is to
   own that value, it must be copied.
+  
+**Example**
+
+```
+subr AutoResMan(obj)
+{
+    decl foo = 9;
+
+    // - 3 is a transient rvalue. It doesn't have much resource
+    //   with itself per se.
+    // - `foo` is an owned lvalue (i.e. not transient),
+    //   it will go out of scope when the function ends.
+    // - after `foo += 3`, this fragment becomes a transient
+    //   rvalue, which is its initial occurence.
+    // - after the assignment to `obj.k`, this piece of expression
+    //   becomes another rvalue, and is an initial occurence.
+    // - after the assignment to `bar`, the same happens again.
+    decl bar = obj.k = foo += 3;
+
+    // `bar` will no longer be an lvalue outside after the function ends,
+    // which constitutes the initial occurence of an rvalue.
+    return bar;
+}
+```
 
 <?= hc_H2("Subroutines and Methods") ?>
 
