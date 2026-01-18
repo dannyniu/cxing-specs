@@ -127,59 +127,24 @@ As mentioned before, lvalues have scopes. Precisely, for an lvalue:
 - if it's declared in a block, its scope begins there towards the end of
   the block (i.e. the enclosing brace),
 - if it's the member of an object, its scope is the object,
+- in a function call, the parameters form a scope.
 
-A _transient lvalue_ is an _lvalue_ that's not declared in the scope where it's used.
-The following rules govern how automatic resource management occurs:
-- When a value that is not an lvalue (hence _rvalue_) _initially occurs_,
-  it for once becomes its own copy.
-- When a value is being _assigned to a scope_, be it an object member, or a
-  declared variable, it's `__copy__`'d.
-- When a value, whether an lvalue or an rvalue, _goes out of scope_,
-  unless it's a transient lvalue, it's `__final__`'d.
+Values that're not lvalues are known as _rvalues_.
 
-**Note**: The reasoning behind the above rules governing automatic resource
-management is as follow:
-- When a value gets created (i.e. initially occurs), conceptually it has a
-  reference count of 1 - this includes the case of both the value is actually
-  created AND when an rvalue results from an lvalue e.g. in an assignment expression.
-- Every scope _owns_ some entities, and _borrows_ some entities elsewhere,
-  together, this constitutes the objects under computation in this scope.
-  When the scope ends, the _owned_ entities must be finalized, whereas
-  the _borrowed_ ones must not.
-- The declared variables are clearly owned entities for a scope.
-- Some entities do not get assigned to declared variables, and thus transient.
-  some are lvalues and some are not.
-  - Because transient lvalues are clearly not declared in the current scope,
-    they should not be finalized when the scope ends.
-  - Other transient values are not owned by or visible to other scopes,
-    therefore they also need to be finalized.
-- Lvalues must have a scope by definition, and therefore owned by it.
-- Because the scope of transient lvalues don't change, when another scope is to
-  own that value, it must be copied.
-  
-**Example**
-
-```
-subr AutoResMan(obj)
-{
-    decl foo = 9;
-
-    // - 3 is a transient rvalue. It doesn't have much resource
-    //   with itself per se.
-    // - `foo` is an owned lvalue (i.e. not transient),
-    //   it will go out of scope when the function ends.
-    // - after `foo += 3`, this fragment becomes a transient
-    //   rvalue, which is its initial occurence.
-    // - after the assignment to `obj.k`, this piece of expression
-    //   becomes another rvalue, and is an initial occurence.
-    // - after the assignment to `bar`, the same happens again.
-    decl bar = obj.k = foo += 3;
-
-    // `bar` will no longer be an lvalue outside after the function ends,
-    // which constitutes the initial occurence of an rvalue.
-    return bar;
-}
-```
+The following rules govern the occurence of automatic resource management:
+- When a value is being _assigned to a scope_, be it an object member, a
+  declared variable, or a parameter to a function call, it's `__copy__`'d.
+- When a value goes out of scope, it's `__final__`'d.
+- When an rvalue _initially occurs_, it becomes its first copy. For example:
+  - when an object is created, there's only 1 copy of it, and a `__final__`
+    immediately frees any resources consumed by it.
+  - if an object come externally from another function, it becomes 
+    an additional copy within the current function.
+  - when an lvalue becomes an rvalue as described later, it's `__copy__`'d.
+- When an lvalue is being consumed, unless the expression consuming it is
+  explicitly defined as producing an lvalue, it becomes an rvalue.
+- All rvalues may be `__final__`'d as late as by the end of the scope
+  in which the expression in which they're consumed.
 
 <?= hc_H2("Subroutines and Methods") ?>
 
@@ -250,6 +215,8 @@ The `str` type
 The string type `str` is not a built-in type, instead, it's an opaque object
 type defined in the standard library. The string type has significance in the
 `indirect` member access operator in a `postfix-expr` postfix expression.
+
+Each occurence of (concatenation of) string literal creates a new string object.
 
 The `true` and `false` special values
 ----

@@ -11,57 +11,61 @@ provides flexibility in combining full expressions in way that wouldn't
 otherwise be expressive enough through expressions due to use of parentheses.
 
 ```grammar
-and-phrase-ion % and_phrase_ion
-: expressions-list "and" % exprlist_and
-| expressions-list "_Then" % exprlist_then
-| and-phrase-atom "and" % ionize_and
-| and-phrase-atom "_Then" % ionize_then
+conj-ion % and_phrase_ion
+: conj-atom "and" % and
+| conj-atom "_Then" % then
 ;
 
-and-phrase-atom % and_phrase_atom
-: and-phrase-ion expressions-list % atomize
+conj-atom % and_phrase_atom
+: expressions-list % degenerate
+| conj-ion expressions-list % atomize
 ;
 
-or-phrase-ion % or_phrase_ion
-: expressions-list "or" % exprlist_or
-| expressions-list "_Fallback" % exprlist_nullcoalesce
-| control-flow-operator "or" % op_or
-| control-flow-operator "_Fallback" % op_nullcoalesce
-| control-flow-operator label "or" % labelledop_or
-| control-flow-operator label "_Fallback" % labelledop_nullcoalesce
-| "return" "or" % returnnull_or
-| "return" "_Fallback" % returnnull_nullcoalesce
-| "return" expression "or" % returnexpr_or
-| "return" expression "_Fallback" % returnexpr_nullcoalesce
-| and-phrase-atom "or" % andphra_or
-| and-phrase-atom "_Fallback" % andphra_nullcoalesce
-| or-phrase-atom "or" % ionize_or
-| or-phrase-atom "_Fallback" % ionize_nullcoalesce
+disj-ion % or_phrase_ion
+: disj-atom "or" % or
+| disj-atom "_Fallback" % nc
+| conj-ion control-flow-ions % ctrl_flow
 ;
 
-or-phrase-atom % or_phrase_atom
-: or-phrase-ion and-phrase-atom % atomize
-;
-
-seq-phrase-molecule % seq_phrase_atom
-: expressions-list ";" % exprlist
-| control-flow-operator ";" % op
-| control-flow-operator label ";" % labelledop
-| "return" ";" % returnnull
-| "return" expressions-list ";" % returnexpr
-| or-phrase-atom ";" % orphra
+disj-atom % or_phrase_atom
+: conj-atom % degenerate
+| disj-ion conj-atom % atomize
 ;
 
 phrase-stmt % phrase_stmt
-: seq-phrase-molecule % degenerate
-| and-phrase-ion seq-phrase-molecule % andphra
-| or-phrase-ion seq-phrase-molecule % orphra
+: disj-atom ";" % base
+| control-flow-molecule % ctrl_flow
+| conj-ion control-flow-molecule % conj_ctrl_flow
+| disj-ion control-flow-molecule % disj_ctrl_flow
+;
+
+control-flow-ions % ctrl_flow_ion
+: control-flow-operator "or" % op_or
+| control-flow-operator "_Fallback" % op_nc
+| control-flow-operator identifier "or" % labelledop_or
+| control-flow-operator identifier "_Fallback" % labelledop_nc
+| "return" "or" % returnnull_or
+| "return" "_Fallback" % returnnull_nc
+| "return" expressions-list "or" % returnexpr_or
+| "return" expressions-list "_Fallback" % returnexpr_nc
+;
+
+control-flow-molecule % ctrl_flow_molecule
+: control-flow-operator ";" % op
+| control-flow-operator identifier ";" % labelledop
+| "return" ";" % returnnull
+| "return" expressions-list ";" % returnexpr
+;
+
+control-flow-operator % flowctrlop
+: "break" % break
+| "continue" % continue
 ;
 ```
 
 - `*_atom`: first, the ion is evaluated, if the result is `{STOP(value)}`,
   then the value of this phrase atom is `value`, otherwise the 2nd term
-  (the `expressions-list` or the `and-phrase-atom`) is evaluated, and its
+  (the `expressions-list` or the `conj-atom`) is evaluated, and its
   value is the value of the phrase.
 - `*_ion`: if the 1st term does not alter the control flow, then its value is
   evaluated, then, depending on the last token in the rewrite sequence:
@@ -72,13 +76,12 @@ phrase-stmt % phrase_stmt
     the value is nullish.
   - otherwise, `{STOP(value)}`, with `value` being the evaluated value of the
     1st term, becomes the result.
-- `exprlist*`: the value of this term is that of the expression.
 
-- `op`: Apply the flow-control operation to the inner-most applicable scope.
-- `labelledop`: Apply the flow-control operation to the labelled statement scope.
-- `returnnull`: Terminates the executing function.
+- `op*`: Apply the flow-control operation to the inner-most applicable scope.
+- `labelledop*`: Apply the flow-control operation to the labelled statement scope.
+- `returnnull*`: Terminates the executing function.
   If the caller expected a return value, it'll be a Morgoth `null`.
-- `returnexpr`: Terminates the executing function with
+- `returnexpr*`: Terminates the executing function with
   return value being that of `expression`.
 
 ```grammar
@@ -161,21 +164,44 @@ do-while-loop % dowhile
 
 ```grammar
 for-loop % for
-: "for" "(" expressions-list ";"
+: "for" "(" ";" ";" ")" statement % forever
+
+| "for" "(" ";" ";" expressions-list ")" statement % iterated
+
+| "for" "(" ";" expressions-list ";" ")" statement % conditioned
+
+| "for" "(" ";" expressions-list ";"
+                expressions-list ")" statement % controlled
+
+| "for" "(" expressions-list ";" ";" ")" statement % initonly
+
+| "for" "(" expressions-list ";" ";"
+            expressions-list ")" statement % nocond
+
+| "for" "(" expressions-list ";"
+            expressions-list ";" ")" statement % noiter
+
+| "for" "(" expressions-list ";"
             expressions-list ";"
             expressions-list ")" statement % classic
 
+| "for" "(" declaration ";" ";" ")" statement % vardecl
+
+| "for" "(" declaration ";" ";"
+            expressions-list ")" statement % vardecl_nocond
+
+| "for" "(" declaration ";"
+            expressions-list ";" ")" statement % vardecl_noiter
+
 | "for" "(" declaration ";"
             expressions-list ";"
-            expressions-list ")" statement % vardecl
+            expressions-list ")" statement % vardecl_controlled
 ;
 ```
 
-- `classic`: Evaluate `expressions-list` before the first semicolon, then
-  execute the for loop by invoking the "execute the for loop once" recursive
-  procedure described later.
-- `vardecl`: Evaluate `declaration`, then execute the for loop in a fashion
-  similar to `classic`.
+Evaluates `expressions-list` or `declaration` before the first semicolon, then
+execute the for loop by invoking the "execute the for loop once" recursive
+procedure described later.
 
 To execute the for loop once, evaluate `expressions-list` after the first
 semicolon, if it's true, then `statement` is evaluated, then the
@@ -212,7 +238,7 @@ scope and key can be deduced from context.)
 ```grammar
 declaration % decl
 : "decl" identifier % singledecl
-| "decl" identifier "=" assign-expr % signledeclinit
+| "decl" identifier "=" assign-expr % singledeclinit
 | declaration "," identifier % declarelist1
 | declaration "," identifier "=" assign-expr % declarelist2
 ;

@@ -30,6 +30,8 @@ The representations for `char`, `byte`, `short`, `ushort`, `int`, `uint`,
 following their description; their alignments are the same as their size.
 These are known as primitive types.
 
+**2026-01-06 TODO**: the `from` method property of the above types.
+
 A `struct_inst` object represents an instance of structure that is suitabl for
 use in a call to the `map()` method of the `str` type, representing a structure
 with members laid out sequentially and suitably align. A `packed_inst` is

@@ -19,16 +19,27 @@ postfix-expr % postfix
 : primary-expr % degenerate
 | postfix-expr "=?" primary-expr % nullcoalesce
 | postfix-expr "[" assign-expr "]" % indirect
-| postfix-expr "(" expressions-list ")" % funccall
 | postfix-expr "." identifier % member
 | postfix-expr "++" % inc
 | postfix-expr "--" % dec
+| function-call % funccall
 | object-notation % objdef
+;
+
+function-call % funccall
+: postfix-expr "(" ")" % noarg
+| funccall-start-nocomma ")" % somearg
+;
+
+funccall-start-nocomma % funcinvokenocomma
+: postfix-expr "(" assign-expr % base
+| funccall-start-nocomma "," assign-expr % genrule
 ;
 ```
 
 - `nullcoalesce`: If the value of `postfix-expr` isn't nullish, then the value
-  is that of `postfix-expr`, otherwise that of `primary-expr`.
+  is that of `postfix-expr` and the second operand is not evaluated,
+  otherwise the value is that of `primary-expr`.
 - `indirect`: Reads the key identified by `expressions-list` from the object
   identified by `postfix-expr`. The result is an lvalue.
 - `funccall`: Calls `postfix-expr` as a function, given `expressions-list`
