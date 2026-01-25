@@ -42,7 +42,6 @@ subr islong(x);
 subr isulong(x);
 subr isdouble(x);
 subr _Uncast(x);
-subr objcls(x);
 ```
 
 The functions `isnull`, `islong`, `isulong`, `isdouble`, determines whether
@@ -53,8 +52,3 @@ The function `_Uncast` performs uncasting of `null`s - an operation whose
 semantic is described in <?= hcNamedSection("Types and Special Values") ?>.
 
 **TODO 2025-12-26**: decide what to do with non-null arguments for uncasting.
-
-The function `objcls` classifies the value and determines the prototype of the
-object. If the value is an object, it returns the `__proto__` property of the
-object as if by `__get__` function, otherwise, it returns a blessed `null` that
-uncasts to 0.

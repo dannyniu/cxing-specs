@@ -55,8 +55,7 @@ objdef-start-nocomma % objdefstartnocomma
 object-notation % objdef
 : postfix-expr "{" "}" % empty
 | objdef-start "}" % some
-| postfix-expr "[" "]" % emptyarray
-| postfix-expr "[" expressions-list "]" % array
+| auto-index % array
 ;
 ```
 
@@ -74,6 +73,18 @@ of `postfix-expr` becomes the value of the `object-notation` expression.
 
 **Note**: As such, the property names `__initset__` and `__proto__` are
 *RESERVED* for the "Type Definition and Object Initialization Syntax".
+
+```grammar
+auto-index-start-comma % array_piece
+: postfix-expr "[" assign-expr "," % base
+| auto-index-start-comma assign-expr "," % genrule
+;
+
+auto-index % array
+: auto-index-start-comma "]" % complete
+| auto-index-start-comma assign-expr "]" % streamline
+;
+```
 
 The `array` rule is a syntax sugar that invokes `__initset__` with elements
 in the `expressions-list` as value and successive integer indicies as key,

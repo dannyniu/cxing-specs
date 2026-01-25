@@ -8,13 +8,17 @@ are used for ease of presentation.
 **The meaning of such notation**:
 
 ```
-[Function1 | Function2 | ... | FunctionN] := { ... }
+[Type(Base): Function1 | Function2 | ... | FunctionN] := { ... }
 ```
 
 *is as follow*:
 
 An object whose members are listed in the brace may be created by and/or
 returned from function(s) Function1 ... FunctionN.
+
+The optional `Type(Base):` part specifies `Type` as name for the type of object
+returned by the said functions, with `Base` representing the 'base class' that
+`Type` inherits features and/or behaviors from.
 
 Modules
 ----

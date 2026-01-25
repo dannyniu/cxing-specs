@@ -66,6 +66,8 @@ plausible real-world applications and implementations can enjoy the efficiency
 enabled by such latitude.
 
 <a id="obj-key-read">To read a key from an object</a>:
+0. if the object is `null`, it is returned as is, preserving uncasting information.
+  (**TODO**: 2026-01-24, check back for inconsistencies)
 1. if the key refers to one of the type-associated properties:
    1. a native object results consisting of:
       - value-proper: the value of this property,

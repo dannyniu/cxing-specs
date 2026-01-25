@@ -5,7 +5,7 @@
 > part of "The Regex Module" must be implemented in their entirity.
 
 ```
-[bre_comp(regex, cflags) | ere_comp(regex, cflags)] := {
+[RegExp: bre_comp(regex, cflags) | ere_comp(regex, cflags)] := {
   // An opaque object representing a compiled regular expression.
   method split(subject);
   method match(subject);
@@ -16,7 +16,8 @@
 
 The `bre_comp()` and `ere_comp()` functions compiles a regular expression based
 on the "Basic Regular Expression" and "Extended Regular Expression" syntax
-specified by POSIX. All regex features up to POSIX-2017 are mandatory.
+specified by POSIX. Under the C/POSIX locale, all regex features up to
+POSIX-2017 are mandatory.
 
 The `cflags` are expressed as radix-64 digits, whose correspondence with
 POSIX compile flag constants are as follow:

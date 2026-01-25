@@ -35,6 +35,8 @@
  hcAddPages("72.01-stdfp");
  hcAddPages("72.02-regex");
  hcAddPages("72.03-stdthr");
+ hcAddPages("73.01-stdio");
+ hcAddPages("73.02-proc");
 
  hc_StartAnnexes();
  hcAddPages("a1-identifier-namespace");

@@ -4,7 +4,7 @@
 > its implementation is mandatory.
 
 ```
-str(val) := {
+str(obj) := {
   method len(),
   method trunc(newlength),
   method putc(c),
@@ -12,12 +12,12 @@ str(val) := {
   method putfin(),
   method cmpwith(s2), // efficient byte-wise collation.
   method equals(s2), // constant-time, cryptography-safe.
-  method map(structlayout),
+  [method map(structlayout)] := {
+    method __get__(k),
+    method __set__(k, v),
+    method unmap(),
+  },
 };
-
-structureddata(obj) := {
-  method unmap(),
-}
 ```
 
 The string type `str` is a sequence of bytes. Some APIs may expect nul-terminated

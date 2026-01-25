@@ -13,6 +13,8 @@
 //   in multiple threads.
 
 [subr mutex(v)] := {
+  method __copy__(),
+  method __final__(),
   [method acquire()] := {
     method __get__(),
     method __set__(),
@@ -25,6 +27,13 @@
 The `mutex()` function creates a mutex which is a sharable object that can be
 used across threads. The argument `v` will be an exclusive object protected by
 the mutex.
+
+The the mutex protects its own internal state during `__copy__` and `__final__`,
+which makes it a sharable object.
+
+**Note**: If implemented using reference counting, `__copy__` and `__final__`
+methods of the mutex locks the underlying mutex before changing the count, and
+unlocks it afterwards.
 
 The `acquire()` method of a mutex returns a "gift" object that can be used
 for accessing `v` - when the function returns, it is guaranteed that the thread
@@ -61,6 +70,8 @@ potential resources used by the value protected by the mutex and the mutex itsel
 
 ```
 [subr condvar(mtx)]  := {
+  method __copy__(),
+  method __final__(),
   method wait(),
   method broadcast(),
   method signal(),

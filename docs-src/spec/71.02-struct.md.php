@@ -30,7 +30,13 @@ The representations for `char`, `byte`, `short`, `ushort`, `int`, `uint`,
 following their description; their alignments are the same as their size.
 These are known as primitive types.
 
-**2026-01-06 TODO**: the `from` method property of the above types.
+All of these type objects have a method member called `from`, which performs
+_explicit type and value conversion_ - unlike implicit type and value conversion,
+the resulting type are determined by the type object. The method takes
+one argument and converts it to a value representable in the destination type:
+- For integer types, the result is the `long` language type for signed types,
+  and `ulong` for unsigned types.
+- For floating point types, the result is `double`.
 
 A `struct_inst` object represents an instance of structure that is suitabl for
 use in a call to the `map()` method of the `str` type, representing a structure

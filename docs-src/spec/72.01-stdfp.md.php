@@ -3,8 +3,8 @@
 Rounding Mode
 ----
 
-**Tentative Note**: The exact form of the following functionality is
-not yet ultimately decided, and may change over time.
+**To Be Changed**: The exact form of the following functionality is being
+redesigned, and will change over time.
 
 ```
 subr fpmode(mode);
@@ -44,8 +44,8 @@ combinations are not valid on some implementations.
 Floating Point Exceptions
 ----
 
-**Tentative Note**: The exact form of the following functionality is
-not yet ultimately decided, and may change over time.
+**To Be Changed**: The exact form of the following functionality is being
+redesigned, and will change over time.
 
 ```
 // Tests for exceptions
