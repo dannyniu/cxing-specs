@@ -282,6 +282,7 @@ To evaluate the ordering relation of 2 operands:
       then the comparison yields false.
 - If either operand is not an object, then they're compared under arithmetic
   context, applying the order evaluation conversion when appropriate.
+  - If there are NaN operand(s), then the result is `null` instead of `false`.
 
 **Note**: The `equals()` method is never used for ordering relations including
 the `<=` and the `>=` operators because an object that's missing `cmpwith()`
@@ -320,6 +321,7 @@ All of the bitwise operations are computed under integer context.
 logic-and % logicand
 : bit-or % degenerate
 | logic-and "&&" bit-or % logicand
+| logic-and "&?" bit-or % then
 ;
 
 logic-or % logicor
@@ -332,6 +334,9 @@ logic-or % logicor
 - `logicand`: if the first operand is zero or `null`, then
   this is the result and the second operand is not evaluated,
   otherwise, it's the value of the second operand.
+- `then`: if the first operand is nullish, then this is the result
+  and the second operand is not evaluated, otherwise, it's the value
+  of the second operand.
 - `logicor`: if the first operand is non-zero and non-`null`, then
   this is the result and the second operand is not evaluated,
   otherwise, it's the value of the second operand.

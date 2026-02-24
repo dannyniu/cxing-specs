@@ -252,3 +252,6 @@ declaration % decl
   another variable in a way similar to `singledecl`.
 - `declarelist2`: In addition to what's declared in `declaration`, declare
   another variable in a way similar to `singledeclinit`.
+
+Variables shall be finalized by implementations in reverse order of their
+declaration when they go out of scope.

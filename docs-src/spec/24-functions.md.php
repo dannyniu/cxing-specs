@@ -28,14 +28,17 @@ appear in the function body of a subroutine.
 When the end of the function body is reached without an explicit `return` phrase,
 a Morgoth `null` is implicitly returned.
 
-The number of parameters between all declarations and the definition of a
-function MUST be consistent - the order of the arguments in a function call
-MUST be consistent with what's expected by the parameters of the function.
-Furthermore, whether a function is a method or a subroutine.
-The name of the parameters may be changed in the source code of a program.
-Depending on the context, this may provide the benefit of both explanative
-argument naming in declaration, and avoidance identifier collision in function
-definition when the argument is appropriately renamed.
+Whether a function is a method or a subroutine must agree across
+all declarations and definition of a function. For declarations that are not
+definition of the function, the number of parameters can vary. This permits
+a limited form of overloading - limited because there can be only one
+definition of a function, and it has only one parameter list.
+
+Within the function body, the first parameter receives the value of the first
+argument in the function call, the second parameter the second argument,
+and so on. If there are more arguments than parameters, excess arguments are
+ignored; conversely, if there are fewer arguments than parameters, those
+parameters that didn't receive arguments assume the value of `null`.
 
 **Note**: Before 2025-10-27, there were FFI methods. This had been removed,
 because methods are attached to properties of objects, and their prototypes

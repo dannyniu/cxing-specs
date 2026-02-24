@@ -1,9 +1,7 @@
 <?= hc_H1("Translation Unit Interface") ?>
 
 A translation unit consist of a series of function declarations and
-definitions. Because definition of objects occur during run time, it's not
-possible to define data objects of static storage duration in <?= langname() ?>,
-this is recognized as unfortunate and accepted as a design decision.
+definitions, and constant definitions.
 
 A translation unit in <?= langname() ?> correspond to relocatable code object,
 or a file contain such information. We choose such definition to emphasize
@@ -18,7 +16,7 @@ meanings in building programs and applications.
 The goal symbol of a source code text string is `TU` - the translation unit
 production. It consist of a series of entity declarations.
 
-```
+```grammar
 TU % TU
 : entity-declaration % base
 | TU entity-declaration % genrule
@@ -26,9 +24,10 @@ TU % TU
 
 entity-declaration % entdecl
 : "_Include" string-literal ";" % srcinc
+| "_Load" string-literal ";" % soload
+| "const" identifier constant ";" % constdef
 | "extern" function-declaration % extern
 | function-declaration % implicit
-| "const" identifier constant ";" % constdef
 ;
 ```
 
@@ -59,8 +58,26 @@ relative to the path of the source code file. However, if the string literal
 naming the header file begins with `./` or `../`, then it's first searched
 relative to the path of the source code file, then the pre-defined set of paths.
 
+Each header shall only be included once as long as the implementation
+can determine that the path in the inclusion declaration refers a file
+that had been included before (e.g. the `realpath` function on POSIX,
+`_fullpath` function on Windows, or device+inode number tuple).
+
+<?= hc_H2("Dependency Loading") ?>
+
+The implementation should support a way to declare dependencies for translation
+unit - if supported, implementation shall expose definitions in a module of
+unspecified form named by `string-literal` in `soload`.
+
+For example, in an implementation that compiles to the ELF format, the `_Load`
+declarations may be directly mapped to `DT_NEEDED` entries in the `PT_DYNAMIC`
+segment.
+
 <?= hc_H2("Constants Definition") ?>
 
 The `const` keyword can be used to define symbolic constants. The type of the
 constant MUST be one of `long`, `ulong`, or `double`. Once the constant is
 defined, the identifier may be used later to substitute the defined value.
+
+It is an ERROR if a constant is redefined - even with the same value, and
+the translation unit SHALL NOT be run successfully.

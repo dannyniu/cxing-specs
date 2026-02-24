@@ -2,10 +2,90 @@
 
 <?= hc_H1("Numerics and Maths") ?>
 
+**Editorial Note**: This chapter is largely re-written on 2026-02-24.
+
 **Note**: Much of this section is motivated by a desire to have a self-contained
 description of numerics in commodity computer systems, as well as an/a
 interpretation / explanation / rationale of the standard text that's at least
 more useful in terms of practical usage than the standard text itself.
+
+The IEEE-754 standard categorize operations under the following 4 categories:
+- That produces floating-point or integer (hence numerical) results and
+  respond to rounding and with exceptions (i.e. General-computational ops).
+- That produces numerical results but doesn't respond with exceptions
+  (i.e. Quiet-computational ops)
+- That produces non-numerical results but responds with exceptions
+  (i.e. Signalling-computational ops)
+- Non-computational operations, that nether produces numerical results
+  nor respond with exceptions.
+
+These categories reflects the observed behavior of the operations, but
+does not explain the purpose of the operations, therefore we here prefer
+another set of categories:
+- Computation: operates on numbers,
+- Conversion: between various numerical formats,
+- Manipulation: offering control at low-level details over floating-point datum.
+- Control: altering the behaviors of other operations.
+
+Of these 4 general categories:
+
+- Mandatory computation operations include:
+  - Arithmetic Operations: Add, Subtract, Multiply, Divide, Exact Remainder
+  - Indispensible and Nice-To-Have: Square-Root, Fused-Multiply-Add
+  - Arithmetic Relations: Greater-Than, Equals, Less-Than
+    (for reasons we'll explain shortly, we've omitted 'Unordered')
+  - Integral Rounding.
+
+- Conversions involve between floating point formats, and to external formats
+  such as textual strings and integers.
+
+- Manipulation include:
+  - individual operations on the sign bit, the exponent,
+    (operation on significands can be done on numbers once exponent is normalized)
+  - nextUp, nextDown,
+  - Classification: Finite (normal, subnormal, zero), NaN (quiet, signalling), Infinite
+
+- Control operations include:
+  - Setting (and Querying) of rounding modes, current exceptions.
+
+A particular difficulty we've identified with realizing IEEE-754
+in <?= langname() ?>, is that there are duplicate functionalities
+in the mandatory operations that differs only in their response with
+exceptions. These include:
+- The rounding and conversion to integers:
+  - quiet version, and
+  - exact versions that signals 'Inexact'.
+- The arithmetic relations
+  - quiet predicates - for codebases that're conscious about NaNs,
+  - signalling predicates - for those that aren't.
+
+At least in Fortran, existing experience showed that people often don't care,
+and possibly don't want to care about exception signals.
+See <https://grouper.ieee.org/groups/msc/ANSI_IEEE-Std-754-2019/background/predicates.txt>
+
+For arithmetic relations, we started clean from the 3 mutually-exclusive
+relations - greater-than, equals, and less-than, obtaining 6 relations from the
+non-empty proper subsets of the 3 relations. Operators will then give only
+`true`-`false` response to these 6 relations. The 4th 'Unordered' relation occurs
+only for `<`, `<=`, `>`, and `>=` operators when there are NaN operand(s),
+and is indicated by having the operators evaluating to `null`, which is
+converted to `0` and thus `false` under the integer context.
+
+For rounding and conversion, we dropped all 'exact' variants of the operations,
+and added a predicate to test for integralness of operands.
+
+At this point, we were able to eliminate the need of status flags as a side
+channel (we still have complete definition on how results are delivered when
+corresponding exception occur though).
+
+As to the rest of the duplicate functionalities, we've decided that the language
+does not surrender its expressiveness to the requirement of a full compliance.
+Instead, all operations in IEEE-754, either mandatory or recommended, would be
+realized in form of 'intrinsics'. Just as intrinsic functions in a C compiler
+provides functionalities of the CPU not otherwise available to the C code,
+floating-point intrinsics make available features of IEEE-754 - not only those
+not yet covered by an existing language feature, but also all features, so that
+programs written primarily with intrinsics can have a consistent coding style.
 
 <?= hc_H2("Rounding") ?>
 
@@ -67,12 +147,6 @@ IEEE-754 specifies the following 5 exceptions:
 
 - **inexact**: this is when the result after rounding differs from what would
   be the actual result if it were calculated to unbounded precision and range.
-
-The standard library provides facility for querying, clearing,
-and raising exceptions. Alternate exception handling attributes
-are implemented in the language as error-handling flow-control
-constructs, such as null-coalescing expression and phrases operators,
-as well as execution control functions.
 
 <?= hc_H2("Reproducibility and Robustness") ?>
 
