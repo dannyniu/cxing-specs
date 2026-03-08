@@ -221,6 +221,4 @@ language, they're almost always implemented as type-associated.
 
 **Note**: Primitive types such as `long`, `ulong`, and `double` may not need
 a `__copy__` method - runtime recognizing these sort of types may copy them
-in any way that may be assumed reasonable according to common sense. For types
-without a `__final__` method, it is assumed that there are no resource consumed
-by the value beyond what's already in the value native object structure.
+in any way that may be assumed reasonable according to common sense.

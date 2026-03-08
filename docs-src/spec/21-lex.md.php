@@ -33,7 +33,7 @@ A *keyword* is an identifier that matches one of the following:
 true false null
 
 // Phrases:
-return break continue and or _Fallback
+return break continue and or _Then _Fallback
 
 // Statements and Declarations:
 decl
