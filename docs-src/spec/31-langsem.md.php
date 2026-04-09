@@ -148,6 +148,18 @@ The following rules govern the occurence of automatic resource management:
 - All rvalues may be `__final__`'d as late as by the end of the scope
   in which the expression in which they're consumed.
 
+As a note to runtime implementers, methods are responsible for `__copy__`'ing
+their `this` arguments _if_ they're returned from the function. The reasoning
+for this is two fold:
+
+1. The language implementation cannot, from syntax level, determine, whether
+   the `this` argument to a method call is an lvalue or an rvalue; or from a
+   semantic level, a return value is going to be the `this` argument or not.
+
+2. For all operations (including operators in expressions and any functions),
+   their operands/arguments are `__final__`'d as discussed above. So whatever
+   result they return, it has to be an 'initial occurrence', hence `__copy__`'d.
+
 <?= hc_H2("Subroutines and Methods") ?>
 
 Both *subroutines* and *methods* are codes that can be executed in the

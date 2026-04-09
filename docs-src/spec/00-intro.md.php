@@ -6,8 +6,8 @@ The <?= langname() ?> Programming Language
   <?php system("git rev-parse HEAD") ?></small>
 
 <small style="display: block; text-align: left;">
-The 2025-12-26 revision of the draft spec is the 2nd feature-complete beta,
-and is ready to be implemented for testing</small>
+The 2025-12-26 revision of the draft spec was the 2nd feature-complete beta,
+and had been ready to be implemented for testing</small>
 
 <?= hc_H1("Introduction") ?>
 

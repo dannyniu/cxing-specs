@@ -38,23 +38,19 @@ the end-of-list. As of 2025-10-27, the `ref` argument type is removed completely
 further as of 2025-12-26, operand types' annotations are eliminated altogether.
 
 ```grammar
-objdef-start % objdefstart
-: objdef-start-comma % comma
-| objdef-start-nocomma % nocomma
-;
-
 objdef-start-comma % objdefstartcomma
 : objdef-start-nocomma "," % genrule
 ;
 
 objdef-start-nocomma % objdefstartnocomma
 : postfix-expr "{" postfix-expr ":" assign-expr % base
-| objdef-start-nocomma "," postfix-expr ":" assign-expr % genrule
+| objdef-start-comma postfix-expr ":" assign-expr % genrule
 ;
 
 object-notation % objdef
 : postfix-expr "{" "}" % empty
-| objdef-start "}" % some
+| objdef-start-comma "}" % some1
+| objdef-start-nocamma "}" % some2
 | auto-index % array
 ;
 ```

@@ -25,8 +25,11 @@ POSIX compile flag constants are as follow:
 - `0\n`: `REG_NEWLINE` - the lines (delimited by the LINE-FEED character)
   in the subject string is considered individually.
 
-The `split()` method splits the subject string into a 0-base-indexed array
-of strings. The `match()` method determines whether the subject string can
+The `split()` method splits the subject string into, and returns,
+a 0-base-indexed array of strings.
+
+The `match()` method determines whether the subject string can,
+(in which case `true` is returned), or cannot (`false` is returned)
 be matched by the regular expression.
 
 The `capture()` method matches the subject string, putting matched
@@ -39,3 +42,5 @@ matching the regex, with `replacement`. Each occurences of `$<n>` where `<n>`
 is a single decimal digit is replaced with the _n_-th subexpression in the
 regex. If `<n>` is 0, then it's replaced with the whole matched portion of
 the subject string. If `limit` is `-1`, then all occurences shall be replaced.
+The original string is not modified, and the returned replaced string is
+a new string object.

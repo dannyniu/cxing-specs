@@ -28,8 +28,10 @@ handle, and buffering is enabled, the subsequent file position of the
 file descriptor (if implemented on top of one) is undefined - this can cause
 issue when one program subsequently loads another (e.g. using one of the `exec`
 functions) and the loaded program proceeds from an unexpected file position.
-This is among the few undefined behaviors in <?= langname() ?>, and we choose
-to not define its behavior due to its usage being arcane and lacking practicality.
+
+**Note**: This is among the few undefined behaviors in <?= langname() ?>,
+by choosing to not define its behavior, explicit permission is given to
+implementations to buffer I/O data.
 
 When a directory entry is created as a result of calling one of the functions
 that accesses the filesystem, barring security hardening by specific
@@ -71,6 +73,8 @@ an implementation-defined status code is returned on failure.
 ```
 GenericFile(obj) := {
   method read(len),
+  method getdelim(c),
+  method getline(),
   method write(s),
   method close(),
   method flush(),
@@ -83,6 +87,16 @@ A `GenericFile` is the base type for file handle objects.
 Its `read` method reads at most `len` bytes of data and returns it. On EOF, it
 returns an empty string; on error, it returns a blessed `null` that uncasts to
 an implementation-defined status code.
+
+Its `getdelim` method reads until when the delimitor byte `c` is encountered,
+and returns a string, up to including the delimitor. If `c` is a string, then
+its initial byte is taken, if `c` is an empty string, the nul byte is assumed,
+if `c` is an integer, then the lower 8 bits are taken as the value for the
+delimitor byte. Any data read that had not been returned shall be available for
+further reading from the same file handle object.
+
+Its `getline` method is equivalent to `getdelim` called with `\n` - i.e. the
+U+000A LINE FEED character.
 
 Its `write` method writes the string `s` to the file, and returns the number of
 bytes actually written. On error, it returns a blessed `null` that uncasts to
