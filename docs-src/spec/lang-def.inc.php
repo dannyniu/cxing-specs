@@ -38,6 +38,7 @@
     $spec_revver = "2"; # 2026-01-25.
     $spec_revver = "3"; # 2026-02-24.
     $spec_revver = "4"; # 2026-04-09.
+    $spec_revver = "5"; # 2026-05-04.
 
     $spec_semver = "$spec_majver.$spec_minver.$spec_revver";
     $GLOBALS['langdefs'] = true;

@@ -37,13 +37,11 @@
  hcAddPages("72.03-stdthr");
  hcAddPages("73.01-stdio");
  hcAddPages("73.02-proc");
+ hcAddPages("73.03-sockets");
 
  hc_StartAnnexes();
  hcAddPages("a1-identifier-namespace");
 
  # Outstanding tasks:
- # 6. standard library - Done with a rationale of being incomplete.
- # 7 (2025-08-26). multi-threading and synchronization - DONE 2025-11-14.
- # 8. idea for a "propagate" operator - the opposite of "fallback".
 
  hcFinish();

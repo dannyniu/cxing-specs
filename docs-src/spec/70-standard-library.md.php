@@ -48,3 +48,9 @@ and the following statement may appear:
 
 > This module depend on module _Y_, should this module be implemented,
 > module _Y_ must also be implemented.
+
+Queries against the Implementation
+----
+
+**TODO** 2026-04-20: allow applications to be aware of the quality and the
+capability of implementations.

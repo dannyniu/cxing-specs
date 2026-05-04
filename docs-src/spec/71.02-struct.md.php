@@ -38,6 +38,11 @@ one argument and converts it to a value representable in the destination type:
   and `ulong` for unsigned types.
 - For floating point types, the result is `double`.
 
+When converting from floating point types to integer types, values within the
+representable range are converted with their fractional digits discarded,
+that is, rounded towards 0; the result is unspecified if the value is outside
+the representable range of the type object.
+
 A `struct_inst` object represents an instance of structure that is suitabl for
 use in a call to the `map()` method of the `str` type, representing a structure
 with members laid out sequentially and suitably align. A `packed_inst` is

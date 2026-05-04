@@ -1,3 +1,5 @@
+<div class="pagebreak"></div>
+
 <?= hc_H1("Library for I/O") ?>
 
 > This chapter forms an integral part of "The Input/Output Module" -
@@ -10,6 +12,7 @@ standard apply:
 
 - directory entry,
 - EOF,
+- errno,
 - FIFO,
 - file,
 - file descriptor,
@@ -60,9 +63,6 @@ a trailing carriage-return `\r` byte, then returns the resulting string.
 On EOF a blessed `null` that uncasts to 0 is returned; on error, a blessed `null`
 that uncasts to an implementation-defined status code is returned.
 
-**TODO**: This implementation-defined status code is expected to be that of
-the `errno` number. Details of this part is being decided.
-
 The `print()` function is a subroutine that writes the string argument `s` to
 the standard output, followed by a single line-feed `\n` byte. On success,
 the number of bytes successfully written. A blessed `null` that uncasts to
@@ -76,7 +76,8 @@ GenericFile(obj) := {
   method getdelim(c),
   method getline(),
   method write(s),
-  method close(),
+  method __copy__(),
+  method __final__(),
   method flush(),
   method setsync(b),
 }
@@ -102,9 +103,11 @@ Its `write` method writes the string `s` to the file, and returns the number of
 bytes actually written. On error, it returns a blessed `null` that uncasts to
 an implementation-defined status code.
 
-Its `close` method closes the file - any buffered content will be _committed_,
-any resource consumed for operating the file will be released, any further use
-of the file handle are invalid and results in error in an undefined way.
+The closure of the file is governed by the `__copy__` and the `__final__` methods
+for resource management. Each copy of a file handle produced by the `__copy__`
+method refers to the same underlying file. When all copies of the file handle
+are destroyed, the file handle is automatically closed, any buffered content 
+will be _committed_, any resource used for operating the file will be released.
 
 For any file, there may be several layers of buffering, two of which are defined
 here (the rest are given acknowledgement).
@@ -172,6 +175,8 @@ with 2 members:
 Both of which are file handles. On failure, it returns a blessed `null` that
 uncasts to an implementation-defined status code.
 
+**Issue**: default handling of SIGPIPE.
+
 <?= hc_H2("Filesystem Operations") ?>
 
 ```
@@ -213,3 +218,16 @@ any call to `readdir` were made.
 The `closedir` function release any resource used by the directory handle.
 Any further use of the directory handle are invalid and results in error
 in an undefined way.
+
+<?= hc_H2("Error Numbers") ?>
+
+There is numerous reference to 'implementation-defined status code' that're
+returned (in the form of blessed `null`s) on failures. On POSIX and some other
+platforms, this is typically one of the `errno` codes.
+
+Whenever this module is supported, all error number codes - those `errno`
+constants defined in the relevant header of POSIX-2017 shall be defined
+and exposed as integer constants to the <?= langname() ?> program.
+Implementations may expose additional `errno` constants beyond those specified
+in POSIX-2017. Future versions of this module may require definitions
+of `errno` constants from a newer edition of the POSIX standard.

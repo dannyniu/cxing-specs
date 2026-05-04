@@ -1,3 +1,5 @@
+<div class="pagebreak"></div>
+
 <?= hc_H1("Library for the String Data Type") ?>
 
 > This chapter forms an integral part of the language and

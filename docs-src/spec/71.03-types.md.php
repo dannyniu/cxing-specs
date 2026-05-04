@@ -1,7 +1,9 @@
-<?= hc_H1("Dynamic Data Structure Types") ?>
+<?= hc_H1("Standard Object Types") ?>
 
 > This chapter forms an integral part of the language and
 > its implementation is mandatory.
+
+<?= hc_H1("Dynamic Data Structure Types") ?>
 
 ```
 [subr dict()] := {
@@ -50,7 +52,7 @@ and the `nextkey` methods can be used to iterate over the keys in a dictionary:
 technique for enumerating dictionary keys, as the latter suffers from high
 memory usage with large dictionaries.
 
-<?= hc_H1("Type Reflection") ?>
+<?= hc_H2("Type Reflection") ?>
 
 ```
 subr isnull(x);
@@ -68,3 +70,6 @@ The function `_Uncast` performs uncasting of `null`s - an operation whose
 semantic is described in <?= hcNamedSection("Types and Special Values") ?>.
 
 **TODO 2025-12-26**: decide what to do with non-null arguments for uncasting.
+**Idea 2026-04-19**: uncast to 0. most POSIX API calls return 0 on success
+and -1 on error. Since most of the use of blessed `null`s are to report `errno`
+codes, which are non-zero, this sort-of makes sense.
