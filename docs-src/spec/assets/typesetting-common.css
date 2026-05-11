@@ -36,6 +36,12 @@ code, pre {
   border-radius: 2pt;
 }
 
+@media (prefers-color-scheme:dark) {
+  code, pre {
+    background:    #404040;
+  }
+}
+
 code {
   font-size:     91%;
 }

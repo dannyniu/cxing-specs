@@ -21,6 +21,7 @@
      echo "<html>\n";
      echo "<head>\n";
      echo "<meta charset=\"UTF-8\">\n";
+     echo "<meta name=\"color-scheme\" content=\"light dark\" />\n";
 
      #echo "<template hidden>";
    }

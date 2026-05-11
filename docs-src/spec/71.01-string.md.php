@@ -17,7 +17,8 @@ str(obj) := {
   [method map(structlayout)] := {
     method __get__(k),
     method __set__(k, v),
-    method unmap(),
+    method __copy__(),
+    method __final__(),
   },
 };
 ```
@@ -52,10 +53,9 @@ of the data structure if the corresponding memory backing is writable. The
 memory backing is writable by default, and the circumstances under which it's
 not writable is implementation-defined.
 
-The `unmap()` function unmaps the parsed representation, thus making it
-no longer usable, and returns `true`. The variable can then only be finalized
-(or overwritten, which would imply a finalization). The `trunc()` function
-cannot be called on the string unless there's no active mapping of the string.
+The `__copy__()` and the `__final__()` methods governs the lifetime of the
+mapping object. The `trunc()` function cannot be called on the string unless
+there's no active mapping of the string.
 
 **Note**: Previously, the `unmap()` function returned `null`. Because nullish
 values are reserved in <?= langname() ?> entirely as an error indicator, its
