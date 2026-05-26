@@ -32,6 +32,7 @@
  hcAddPages("71.01-string");
  hcAddPages("71.02-struct");
  hcAddPages("71.03-types");
+ hcAddPages("71.04-times");
  hcAddPages("72.01-stdfp");
  hcAddPages("72.02-regex");
  hcAddPages("72.03-stdthr");

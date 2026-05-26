@@ -77,3 +77,5 @@ giving a chance for the process to do any cleanup.
 
 The `Stop` method and `Continue` method stops (i.e. pauses) and continues the
 execution of the process refered to by the process handle.
+
+**TODO**: `chdir`, `getenv`, `main`, etc. for the current process.

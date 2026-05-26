@@ -3,7 +3,9 @@
 > This chapter forms an integral part of the language and
 > its implementation is mandatory.
 
-<?= hc_H1("Dynamic Data Structure Types") ?>
+<?= hc_H2("Dynamic Data Structure Types") ?>
+
+<?= hc_H3("Dictionary / Hash Table") ?>
 
 ```
 [subr dict()] := {
@@ -20,7 +22,7 @@
 The function `dict` creates a dictionary, also known as associative arraies, or
 hash table (from the implementation's perspective) in literatures.
 The semantics of `__get__`, `__set__`, `__copy__`, `__final__`, and `__unset__`
-are as described in <?= hcNamedSection("Object/Value Key Access") ?>,
+are as described in <?= hcNamedSection("Object/Value Key Access") ?>.
 
 Before returning, `dict` shall initialize the dictionary with a method member
 with the name of `__initset__` which is used for object definition notation.
@@ -52,6 +54,44 @@ and the `nextkey` methods can be used to iterate over the keys in a dictionary:
 technique for enumerating dictionary keys, as the latter suffers from high
 memory usage with large dictionaries.
 
+<?= hc_H3("Ordered Set / Array") ?>
+
+```
+[subr array()] := {
+  method __get__(k),
+  method __set__(k, v),
+  method __copy__(),
+  method __final__(),
+  method __initset__(k,v),
+  method len(),
+  method trunc(newlength),
+  method swap(a,b),
+  method move2head(index),
+  method move2tail(index),
+}
+```
+
+The function `array` creates an array, which is an ordered set. The semantics
+of `__get__`, `__set__`, `__copy__`, and `__final__`, are as described
+in <?= hcNamedSection("Object/Value Key Access") ?>, except with the
+restriction that the argument `k` must be a runtime implementation defined
+mapping from an integer.
+
+The semantics of the method `__initset__` is as described
+in <?= hcNamedSection("Type Definition and Object Initialization Syntax") ?>,
+with similar restriction on `k`.
+
+The `len` method returns the length of the array. The `trunc` function resizes
+the array to `newlength`, and returns the array if successful, or `null` on failure.
+
+The `swap` method swaps the value at the index position `a` and `b` within
+the array. This method is intended for implementations of sorting algorithms.
+The `move2head` and `move2tail` methods removes the element at `index` position
+in the array, shifting all elements preceeding (for `move2head`) or following
+(for `move2tail`) it, and place the element at the head or the tail of the list.
+These 3 functions returns the array on success.
+The implementation of these 3 method ought to avoid extroneous copying.
+
 <?= hc_H2("Type Reflection") ?>
 
 ```
@@ -68,8 +108,6 @@ type `double` respectively.
 
 The function `_Uncast` performs uncasting of `null`s - an operation whose
 semantic is described in <?= hcNamedSection("Types and Special Values") ?>.
-
-**TODO 2025-12-26**: decide what to do with non-null arguments for uncasting.
-**Idea 2026-04-19**: uncast to 0. most POSIX API calls return 0 on success
-and -1 on error. Since most of the use of blessed `null`s are to report `errno`
-codes, which are non-zero, this sort-of makes sense.
+A non-null value uncasts to 0 - this makes sense because most POSIX API calls
+return 0 on success and -1 on error, and `errno` failure codes uncasted from
+blessed `null`s are non-zero.

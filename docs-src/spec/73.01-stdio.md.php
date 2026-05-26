@@ -197,7 +197,8 @@ subr mkdir(path);
 [subr opendir(path)] := {
   method readdir(),
   method rewinddir(),
-  method closedir(),
+  method __copy__(),
+  method __final__(),
 }
 ```
 
@@ -211,13 +212,18 @@ an implementation-defined status code is returned.
 
 The `readdir` method returns a string naming the directory entry at the current
 _directory position_, and advancing it. The directory position of a directory
-handle is an opaque internal concept of directory handle. The `rewinddir`
-resets the directory position to the state it was when it was opened and before
-any call to `readdir` were made.
+handle is an opaque internal concept of directory handle. When the directory
+position is at the end, the method returns an empty string.
 
-The `closedir` function release any resource used by the directory handle.
-Any further use of the directory handle are invalid and results in error
-in an undefined way.
+The `rewinddir` resets the directory position to the state it was
+when it was opened and before any call to `readdir` were made, and returns
+the directory handle.
+
+The closure of the directory handle is governed by the `__copy__` and
+the `__final__` methods for resource management. Each copy of a directory handle
+produced by the `__copy__` method refers to the same underlying directory.
+When all copies of the directory handle are destroyed, the directory handle is
+automatically closed, any resource used for operating the directory will be released.
 
 <?= hc_H2("Error Numbers") ?>
 

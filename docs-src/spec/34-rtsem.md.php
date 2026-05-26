@@ -195,7 +195,7 @@ to that of values (i.e. the concept of value native objects).
 subr cxing_gc();
 ```
 
-The `cxing_gc` foreign function invokes the garbage collection process.
+The `cxing_gc` function invokes the garbage collection process.
 
 **Note**: In part because of the runtime implementation need to be informed of
 destruction of values to finalize relevant resources, more pressingly because
