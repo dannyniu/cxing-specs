@@ -106,11 +106,6 @@ are as follow:
     <td>0
     <td>-
     <tr>
-    <td>`listen`
-    <td>`listen`
-    <td>0
-    <td>-
-    <tr>
     <td>`accept`
     <td>`accept`
     <td>A socket for interacting with the accepted connection.

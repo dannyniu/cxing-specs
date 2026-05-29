@@ -28,12 +28,14 @@ The `mutex()` function creates a mutex which is a sharable object that can be
 used across threads. The argument `v` will be an exclusive object protected by
 the mutex.
 
-The the mutex protects its own internal state during `__copy__` and `__final__`,
-which makes it a sharable object.
+The destruction of resources is governed by the `__copy__` and `__final__` methods.
+Each copy of the mutex produced by the `__copy__` method shall refers to the same
+underlying mutex.
 
-**Note**: If implemented using reference counting, `__copy__` and `__final__`
-methods of the mutex locks the underlying mutex before changing the count, and
-unlocks it afterwards.
+**Note**: If implemented using reference count, the `__copy__` and the `__final__`
+methods should use atomic reference counts, or protect such count using a
+mechanism distinct from that for `v`, in order to avoid deadlock during the
+lifetime of the gift.
 
 The `acquire()` method of a mutex returns a "gift" object that can be used
 for accessing `v` - when the function returns, it is guaranteed that the thread
@@ -66,6 +68,14 @@ may decrement the counter, and when it reaches 0, unlocks the mutex.
 **Note**: The conceptual counter is distinct from the reference count of any
 potential resources used by the value protected by the mutex and the mutex itself.
 
+<?php /*
+Since this is a 64-bit langauge, it is assumed that whatever platform that
+provides greater than 32-bit memory space will need multiple cores to handle
+large amount of data, and therefore will necessarily provide synchronization
+primitives - especially atomic operations (even if emulated), that enabled
+efficient implementation of mutecies.
+*/ ?>
+
 <?= hc_H2("Condition Variables") ?>
 
 ```
@@ -81,11 +91,14 @@ potential resources used by the value protected by the mutex and the mutex itsel
 The `condvar()` function creates a condition variable. It monitors a condition
 associated with the states protected by the mutex identified by `mtx`.
 
-**Note**: Condition variables are created associated with a mutex up front
-so that potential implementations using reference count can protect that
-counter with the mutex just like mutex instances. It is strongly advised that
-implementations use actual _atomic_ reference counts where available if they
-were to use reference counting for resource management.
+The destruction of resources is governed by the `__copy__` and `__final__` methods.
+Each copy of the condition variable produced by the `__copy__` method shall
+refers to the same underlying condition variable.
+
+**Note**: If implemented using reference count, the `__copy__` and the `__final__`
+methods should use atomic reference counts, or protect such count using a
+mechanism distinct from that of the associated mutex, in order to avoid deadlock
+during the lifetime of the gift.
 
 The `wait()` method of a condition variable instance does the following:
 

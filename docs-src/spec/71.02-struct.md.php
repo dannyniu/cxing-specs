@@ -9,7 +9,7 @@ decl short, ushort; // signed and unsigned 16-bit,
 decl int, uint; // signed and unsigned 32-bit,
 decl long, ulong; // signed and unsigned 64-bit,
 decl half, float, double; // binary16, binary32, binary64.
-// decl _Decimal32, _Decimal64; // not supported yet.
+// decl _Decimal32, _Decimal64; // not supported.
 // decl huge, uhuge, quad, _Decimal128; // too large.
 
 [subr struct()] := {
