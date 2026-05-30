@@ -41,6 +41,5 @@ The `replace()` method replaces `limit` number of occurences of the substring
 matching the regex, with `replacement`. Each occurences of `$<n>` where `<n>`
 is a single decimal digit is replaced with the _n_-th subexpression in the
 regex. If `<n>` is 0, then it's replaced with the whole matched portion of
-the subject string. If `limit` is `-1`, then all occurences shall be replaced.
-The original string is not modified, and the returned replaced string is
-a new string object.
+the subject string. If a `$` is followed by any other punctuation, then the
+behavior is unspecified. If `limit` is `-1`, then all occurences shall be
