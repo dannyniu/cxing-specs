@@ -1,3 +1,5 @@
+<div class="pagebreak"></div>
+
 <?= hc_H1("Library for Multi-Threading") ?>
 
 > This chapter forms an integral part of "The Multi-Threading Module" - should
@@ -160,7 +162,3 @@ behave as such. That third, the usage flexibility makes higher level
 constructions such as asynchronously completing subroutines, coroutines,
 single-apartment proxy objects, etc. be readily implementable in terms of
 the minimal API.
-
-**Note**: The thread handle type may be implemented as sharable by virtue of it
-being immutable. A technique of implementing it as sharable is documented at
-<https://langdev.stackexchange.com/a/4633/1388>.

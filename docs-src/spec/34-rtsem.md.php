@@ -222,3 +222,8 @@ language, they're almost always implemented as type-associated.
 **Note**: Primitive types such as `long`, `ulong`, and `double` may not need
 a `__copy__` method - runtime recognizing these sort of types may copy them
 in any way that may be assumed reasonable according to common sense.
+
+**TODO** (these goes to a chapter):
+- interpreter program name (`cxing`),
+- recommended shebang (`#!/usr/bin/env cxing`),
+- compiler interface.

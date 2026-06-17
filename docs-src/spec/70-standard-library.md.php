@@ -1,6 +1,6 @@
 <div class="pagebreak"></div>
 
-<?= hc_H1("Standard Library") ?>
+<?= hc_H0("Pt.II. Standard Libraries") ?>
 
 In the following sections, some special notations that're not part of langauge
 are used for ease of presentation.

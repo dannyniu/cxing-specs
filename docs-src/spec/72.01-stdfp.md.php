@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Library for Floating Point Environment") ?>
 
 > This chapter forms an integral part of the language and

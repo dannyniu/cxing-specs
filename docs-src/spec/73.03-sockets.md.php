@@ -279,3 +279,5 @@ string object.
 
 - Mandatory Fields:
   `ipv6mr_multiaddr` (string object), `ipv6mr_interface` (integer).
+
+**TODO**: name resolution.

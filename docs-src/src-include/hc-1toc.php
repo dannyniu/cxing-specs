@@ -61,6 +61,7 @@
    {
      $anchor = $Anchors[$ap] ?? null;
      if( $anchor === null ) return "";
+     $n = max($n, 1);
      $ret = "";
      $ret .= "\n<h$n";
      $ret .= " id=\"".$anchor["id"]."\"";
@@ -80,7 +81,7 @@
      for($i=$n; $i<4; $i++)
        $Counters[$i] = 0;
 
-     if( $n == 1 )
+     if( $n <= 1 )
      {
        $Counters[4] = 0;
        $Counters[5] = 0;
@@ -88,7 +89,7 @@
 
      if( $n == 1 && $Counters[0] === "@" )
        $Counters[0] = "A"; // Not we're in an annex.
-     else
+     else if( $n > 0 )
        $Counters[$n-1]++; // Numerical chapter numbering.
 
      $counter = "";
@@ -110,6 +111,7 @@
    }
  }
 
+ function hc_H0($s){ return __hc_Hn($s, 0); }
  function hc_H1($s){ return __hc_Hn($s, 1); }
  function hc_H2($s){ return __hc_Hn($s, 2); }
  function hc_H3($s){ return __hc_Hn($s, 3); }
@@ -425,7 +427,7 @@
    // Output table of content and index.
    if( $OutputControl === "" || $OutputControl === "toc/" )
    {
-     __hc_OutputTocIndex("headings", "Table of Contents", '/^h[1-4]$/');
+     __hc_OutputTocIndex("headings", "Table of Contents", '/^h[0-4]$/');
      __hc_OutputTocIndex("tables", "Tables", '/^table$/');
      __hc_OutputTocIndex("figures", "Figures", '/^figure$/');
      echo "\n<div class=\"pagebreak\"></div>\n\n";

@@ -16,7 +16,9 @@ body {
   break-before:  always;
 }
 
-h1 {
+h1[id^="h0-"] {
+  text-align:    center;
+  font-size:     5ex;
 }
 
 main {
@@ -58,4 +60,9 @@ li {
 
 var {
   font-family:   serif;
+}
+
+table.api-mapping th,
+table.api-mapping td {
+  text-align:    left;
 }

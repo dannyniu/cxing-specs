@@ -16,7 +16,7 @@
  hcAddPages("00-intro");
  hcAddPages("01-features");
 
- // Language //
+ // Language Proper //
  hcAddPages("21-lex");
  hcAddPages("22-expressions");
  hcAddPages("23-statements");
@@ -40,8 +40,9 @@
  hcAddPages("73.02-proc");
  hcAddPages("73.03-sockets");
 
- hc_StartAnnexes();
+ // Language Extended //
  hcAddPages("a1-identifier-namespace");
+ hcAddPages("a2-error-code-namespace");
 
  # Outstanding tasks:
 

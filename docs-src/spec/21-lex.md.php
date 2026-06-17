@@ -1,5 +1,7 @@
 <div class="pagebreak"></div>
 
+<?= hc_H0("Pt.I. Language Proper - Syntax & Semantics") ?>
+
 <?= hc_H1("Lexical Elements.") ?>
 
 For the purpose of this section, the POSIX Extended Regular Expressions (ERE)

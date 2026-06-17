@@ -1,5 +1,4 @@
-The <?= langname() ?> Programming Language
-====
+<?= hc_H0("The ".strtoupper(langname())." Programming Language") ?>
 
 <small style="display: block; text-align: left;">Build Info:
   This build of the (draft) spec is based on git commit

@@ -1,5 +1,10 @@
 <div class="pagebreak"></div>
 
+<?php
+  echo hc_H0("Pt.III. Language Extended - Miscellaneous");
+  hc_StartAnnexes();
+?>
+
 <?= hc_H1("Identifier Namespace") ?>
 
 The goal of this section is to avoid ambiguity of identifiers in the global

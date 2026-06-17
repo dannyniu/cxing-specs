@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Library for I/O") ?>
 
 > This chapter forms an integral part of "The Input/Output Module" -
@@ -79,6 +77,7 @@ GenericFile(obj) := {
   method __copy__(),
   method __final__(),
   method flush(),
+  method close(),
   method setsync(b),
 }
 ```
@@ -104,10 +103,11 @@ bytes actually written. On error, it returns a blessed `null` that uncasts to
 an implementation-defined status code.
 
 The closure of the file is governed by the `__copy__` and the `__final__` methods
-for resource management. Each copy of a file handle produced by the `__copy__`
-method refers to the same underlying file. When all copies of the file handle
-are destroyed, the file handle is automatically closed, any buffered content 
-will be _committed_, any resource used for operating the file will be released.
+for resource management, and the `close` method for explicit control. Each copy
+of a file handle produced by the `__copy__` method refers to the same underlying
+file. When all copies of the file handle are destroyed, or when the `close` method
+is called, the file handle is then closed, any buffered content will be _committed_,
+any resource used for operating the file will be released.
 
 For any file, there may be several layers of buffering, two of which are defined
 here (the rest are given acknowledgement).

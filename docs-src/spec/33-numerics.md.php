@@ -1,5 +1,3 @@
-<div class="pagebreak"></div>
-
 <?= hc_H1("Numerics and Maths") ?>
 
 **Editorial Note**: This chapter is largely re-written on 2026-02-24.
