@@ -107,7 +107,7 @@ The `wait()` method of a condition variable instance does the following:
 1. unlocks the mutex `mtx` specified in the creation argument,
 2. blocks the calling thread, and
 3. wake up when and if the condition variable is signalled,
-4. returns "a tail call of" mutex acquire -
+4. returns with mutex acquired -
 
 all in one single atomic step.
 
@@ -122,12 +122,17 @@ efficient than `broadcast()` when there's only 1 waiting thread.
 
 ```
 [subr thrd_create(thrd_entry, thrd_param) | subr thrd_self()] := {
+  method __copy__();
+  method __final__();
   method join();
   method detach();
   method equals(thrd_hnd t2);
 }
 subr thrd_exit();
 ```
+
+The resource management functions `__copy__` and `__final__` pertains to
+that of the handle itself, and does not affect execution of any thread.
 
 The `thrd_create()` function creates a thread with the `thrd_entry` as its
 entry point, and `thrd_param` as its first and only argument. `thrd_entry`
@@ -137,7 +142,9 @@ thread handle is returned, otherwise, `null` is returned.
 The `thrd_self()` function returns the thread handle corresponding to the
 current thread.
 
-The `thrd_exit()` function cause the current thread to immediately terminate.
+The `thrd_exit()` function cause the current thread to immediately terminate，
+without cleaning up any resource allocated on the stack, or on the heap on
+behalf of the thread.
 
 The `join()` method of a `thrd_hnd` blocks the calling thread until the thread
 referred to by the thread handle termintates. The first such call on a
