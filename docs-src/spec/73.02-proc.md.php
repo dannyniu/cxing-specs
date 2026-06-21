@@ -113,4 +113,19 @@ execution of the process refered to by the process handle.
 Both the preparation context and the process handle are exclusive object types,
 meaning they cannot be accessed concurrently from multiple threads.
 
-**TODO**: `chdir`, `getenv`, `main`, etc. for the current process.
+To run a <?= langname() ?> program, the launched process starts executing from
+a `main` subroutine, which takes 2 arguments:
+- `argc`: the arguments count, and
+- `argv`: the arguments vector, as an array object consisting of strings.
+
+The implementation shall provide the following as appropriate wrapper function
+calls to their so-named counterparts in POSIX.
+
+```
+subr chdir(path);
+subr getcwd();
+
+subr getenv();
+subr setenv(k, v, overwrite);
+subr putenv(s);
+```

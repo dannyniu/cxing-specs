@@ -114,7 +114,7 @@ are as follow:
 </table>
 
 The implementation shall define at least the following integer constants
-corresponding respectively to those in the POSIX socket API:
+corresponding respectively to those in the POSIX API:
 
 - Address Families: `AF_INET`, `AF_INET6`, `AF_UNIX` (if platform supports), `AF_UNSPEC`,
 - Socket types: `SOCK_STREAM`, `SOCK_DGRAM`,
@@ -260,11 +260,10 @@ shall initialize them to all-bit-zero before returning them.
 - Mandatory Fields for `AF_INET6`:
   `sin6_family`, `sin6_port`, `sin6_addr`.
 
-The fields `*_family` and `*_port` shall be of integer type in appropriate range
-in network byte order (e.g. 16-bit port number in host byte order converted to
-big-endian represented in a `long`); `sin_addr` shall be of integer type in
-unsigned 32-bit range in network byte order; `sin6_addr` shall be a 16-byte
-string object.
+The `__set__` and the `__get__` methods of socket address structure types shall
+convert `sin_port`, `sin_addr`, and `sin6_port` between host byte order (setter
+argument and getter return) and network byte order (underlying data backing)
+when called; `sin6_addr` shall be a 16-byte string object.
 
 ```
 [sock_linger(DirectStructFieldAccess): subr sock_linger()]
@@ -280,4 +279,100 @@ string object.
 - Mandatory Fields:
   `ipv6mr_multiaddr` (string object), `ipv6mr_interface` (integer).
 
-**TODO**: name resolution.
+<?= hc_H2("Hostname-Address Resolution") ?>
+
+```
+subr getaddrinfo(hostname, service, family, socktype, protocol, flags);
+```
+
+The `getaddrinfo` function finds (resolves) the socket addresses of a
+service indicated by `service` residing at the host named by `hostname`.
+These 2 arguments shall be string objects.
+
+The `family`, `socktype`, `protocol`, and the `flags` parameters hints to
+the resolver the kind of socket address being sought. They corresponds to
+the respective fields in the POSIX `addrinfo` structure to the `hint` argument
+to the POSIX `getaddrinfo` function. If no hinting is needed, they may be
+specified as zero (The `AF_UNSPEC` address family has a numerical value of 0
+as mandated by the standard).
+
+On success, the function returns an array object containing resolved socket
+addresses in the form of `addrinfo` structure whose fields may be consulted
+to create sockets to initiate or receive connections.
+
+On error, one of the `EAI_*` error codes, or in the case of `EAI_SYSTEM`,
+one of the `errno` codes shall be casted into a `null` and returned.
+
+The following member fields of the `addrinfo` structure shall be accessible:
+- `ai_family`: the address family of the socket,
+- `ai_socktype`: the socket type,
+- `ai_protocol`: the protocol of the socket,
+- `ai_addr`: the socket address object,
+- `ai_canonname`: the "canonical name of service location".
+
+**Note**: because `ai_flags` is the hint input, it's not part of mandated
+readable output; since the result is returned in the form of array objects,
+there's no need for `ai_next` field.
+
+```
+subr getnameinfo(sockaddr, flags);
+```
+
+The `getnameinfo` function shall return an object with 2 member fields:
+- `node`: the hostname of the socket address object `sockaddr`,
+- `service`: the service of the said socket address.
+
+The implementation shall define at least the following integer constants
+corresponding respectively to those in the POSIX API:
+- `AI_PASSIVE`, `AI_CANONNAME`, `AI_NUMERICHOST`, `AI_NUMERICSERV`,
+  `AI_V4MAPPED`, `AI_ALL`, `AI_ADDRCONFIG`,
+- `NI_NOFQDN`, `NI_NUMERICHOST`, `NI_NAMEREQD`, `NI_NUMERICSERV`,
+  `NI_NUMERICSCOPE`, `NI_DGRAM`.
+
+<?= hc_H2("Synchronous Multiplexing") ?>
+
+```
+[subr PollFDs(n)] := {
+  [pollfd(DirectStructFieldAccess): method __get__(i)] :={
+    __get__(k),
+    __set__(k, v),
+  },
+  method __set__(i, pollfd_elem),
+  method __copy__(),
+  method __final__(),
+  method trunc(n),
+}
+
+subr poll(fdArray, timeout);
+```
+
+The `PollFDs` function creates and returns an array of _n_ `pollfd` structures.
+
+The `__get__` method of this array returns the _i_'th element (in 0-based indexing)
+which is a `pollfd` structure. If this structure didn't go out of scope
+before the PollFDs array, then behavior of accessing it is undefined.
+(This permits it be implemented as weak reference to the array.)
+
+The `__set__` element copies the content of the `pollfd_elem` argument
+into the _i_'th element of the array.
+
+The resource management of the PollFDs array are goverend by the `__copy__`
+and the `__final__` methods. The destruction of the array shall have no effect
+on the file handles it contains.
+
+The `trunc` method may be used to resize the array. After shrinking the array,
+excess file handles shall not be closed (i.e. they're considered weak reference),
+and after growing the array, additional slots shall be zero-initialized with
+the file handle field set to a distinguished non-valid value.
+
+A `pollfd` structure shall allows the setting of the following fields:
+- `fd`: the file handle. Because of the need to convert it from a CXING file
+  handle to a system handle, certain information may be lost preventing it
+  from being retrieved back using the `__get__` method.
+- `events`: the IO event that the program is interested in,
+- `revents`: the IO event occured before polling completed.
+
+The implementation shall define at least the following integer constants
+corresponding respectively to those in the POSIX API:
+- `POLLIN`, `POLLOUT`.
+- `POLLERR`, `POLLHUP`, `POLLNVAL`.

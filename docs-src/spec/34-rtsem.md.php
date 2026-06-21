@@ -18,7 +18,7 @@ along with its runtime is revised, a new version is released, and the
 vulnerable version is deprecated immediately. The versioning practice is
 in line with recommendation by [Semantic Versioning](https://semver.org/).
 
-<?= hc_H2("Binary Linking Compatibility") ?>
+<?= hc_H2("Binary Linking and Program-Level Interfaace Compatibility") ?>
 
 Dynamic libraries and applications linking with dynamic libraries programmed
 in <?= langname() ?> should not statically link with the <?= langname()." " ?>
@@ -52,6 +52,10 @@ recommended name is `libcxing<?= "$spec_majver.$spec_minver.dylib" ?>` .
 For some platforms such as Windows, vendors have greater control over the
 dynamic libraries bundled with the programs in an application. Therefore
 no particular recommendations are made for these platforms.
+
+The recommended name for the interpreter program of this version of the language
+is <?php assert( langname() === "cxing" ); ?> `cxing`. The recommanded shebang
+directive is `#!/usr/bin/env cxing`.
 
 <?= hc_H2("Calling Conventions and Foreign Function Interface") ?>
 
@@ -222,8 +226,3 @@ language, they're almost always implemented as type-associated.
 **Note**: Primitive types such as `long`, `ulong`, and `double` may not need
 a `__copy__` method - runtime recognizing these sort of types may copy them
 in any way that may be assumed reasonable according to common sense.
-
-**TODO** (these goes to a chapter):
-- interpreter program name (`cxing`),
-- recommended shebang (`#!/usr/bin/env cxing`),
-- compiler interface.

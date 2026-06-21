@@ -1,21 +1,94 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width"/>
-<meta name="color-scheme" content="light dark" />
-<title>The CXING Programming Language Development Website</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <meta name="color-scheme" content="light dark" />
+    <title>The CXING Programming Language</title>
+  </head>
+  <body>
+    <style>
+      body { padding: 1pc calc(5vw + 50px); }
+    </style>
 
-<p>This website hosts development documentations for the CXING programming
-language.</p>
+    <h1 id="big-title">
+      <style>
+        h1#big-title { text-align: center; }
+        h1#big-title span { font-size: 114%; }
+      </style>
+      <span>The CXING Programming Language</span>
+    </h1>
 
-<ul>
-<li><a href="build/cxing-spec-draft.pdf">PDF Printable Draft</a></li>
-<li><a href="build/multipage/frame.html">HTML Web Draft</a></li>
-<li><a href="build/singlepage/main.html">HTML Web Draft (single-page)</a></li>
-</ul>
+    <div id="slogans">
+      <style>
+        #slogans {
+          font-size: 120%;
+          font-style: italic;
+          font-family: serif;
+          line-height: 2;
+          margin: 2pc calc(7vw + 7mm);
+        }
+      </style>
+      A future-proof clean start. <br/>
+      A familiar and intuitive hands-on experience. <br/>
+      A reliable behavioral semantic for application logic.
+    </div>
 
-</body>
+    <p>
+      CXING is a relatively new (born around 2026) programming language,
+      developed out of frustration over:
+    </p>
+
+    <ol>
+      <li>the verbosity it took to ensure memory safety
+        and correct resource management in C,</li>
+
+      <li>the lack of multi-threading capability,
+        the proliferation of new features in JavaScript recent years,
+        and onerous requirement on Unicode support
+        in its UTF-16 String type and its RegExp syntax,</li>
+
+      <li>the querulous Exceptions thrown over trivial errors in Python,</li>
+
+      <li>the mostly vendor-bound nature of C#, Swift, Kotlin, and Java,</li>
+
+      <li>lack of binary portability specification for Go,</li>
+
+      <li>the querulous error messages produced by a Rust compiler
+        over faults in a seemingly correct fragment of source code,
+        (and in a way, its hype)</li>
+
+      <li>and finally the atrocity that is C++.</li>
+    </ol>
+
+    <p>
+      And since there are other agenda on my list,
+      I might as well just go ahead and create a
+      new language to satisfy them better.
+
+      The language's (draft) specification is written side-by-side
+      and slightly ahead of the reference implementation, so that
+      they guide and verify each other.
+    </p>
+
+    <p>As stated in the spec:</p>
+
+    <blockquote>
+      Programs written in cxing should be
+      no less portable than when it's written in C.
+    </blockquote>
+
+    <hr/>
+
+    <h2>Development documents for the CXING programming language.</h2>
+
+    <b>Language Specification</b>:
+
+    <ul>
+      <li><a href="build/cxing-spec-draft.pdf">PDF Printable Draft</a></li>
+      <li><a href="build/multipage/frame.html">HTML Web Draft</a></li>
+      <li><a href="build/singlepage/main.html">HTML Web Draft (single-page)</a></li>
+    </ul>
+
+  </body>
 </html>

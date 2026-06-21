@@ -4,12 +4,7 @@
   This build of the (draft) spec is based on git commit
   <?php system("git rev-parse HEAD") ?></small>
 
-<small style="display: block; text-align: left;">
-The 2025-12-26 revision of the draft spec was the 2nd feature-complete beta,
-and had been ready to be implemented for testing</small>
-
 <?= hc_H1("Introduction") ?>
-
 
 Goal
 ----
@@ -29,8 +24,8 @@ either as interpreted or as compiled. Programs written in <?= langname()." " ?>
 should be no less portable than when it's written in C.
 
 Features are introduced on strictly maintainable basis. The reference
-implementation will be an AST-based interpreter (or a transpiler to C?),
-which will serve as instrument of verification for additional implementations.
+implementation will be an AST-based interpreter, which will serve as
+instrument of verification for additional implementations.
 The version of the language (if it ever changes) will be independent of the
 versions of the implementations.
 
