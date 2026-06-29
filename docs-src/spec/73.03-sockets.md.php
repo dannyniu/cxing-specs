@@ -40,10 +40,12 @@ failure returns.
   method bind(name),
   method connect(peer),
   method listen(backlog),
-  method accept(), // returns a socket,
 
-  method __get__(k),
-  method __set__(k, v),
+  // returns a socket, optionally placing the address of the peer in `addr`.
+  method accept(addr?),
+
+  method getconfig(k),
+  method setconfig(k, v),
   method __copy__(),
   method __final__(),
 }
@@ -121,13 +123,13 @@ corresponding respectively to those in the POSIX API:
 - I/O flags: `MSG_NOSIGNAL`, `MSG_PEEK`, `MSG_WAITALL`,
 - Others: `SHUT_RD`, `SHUT_RDWR`, `SHUT_WR`, `SOCK_CLOEXEC`.
 
-The `__get__` and `__set__` methods of a socket object can be used to configure
-and inspect socket options and properties.
+The `getconfig` and `setconfig` methods of a socket object can be used to
+inspect and configure socket options and properties.
 
 <?= hc_H2("Socket Options and Properties") ?>
 
 The `sockname` and `peername` properties are the socket addresses of the socket
-object and its peer respectively, and are retrieved using the `__get__` method.
+object and its peer respectively, and are retrieved using the `getconfig` method.
 
 The options on the other hand consist of a 'level' and a 'name', separated by
 a solidus `/`. Implementations shall support the following options, and may
@@ -152,7 +154,7 @@ the value of either `true` or `false`.
     <td>Boolean
     <tr>
     <td>`SOL_SOCKET/SO_DOMAIN` (read-only)
-    <td>Socket Domain Enumeration,
+    <td>Socket Domain Enumeration, (new in POSIX-2024)
     <tr>
     <td>`SOL_SOCKET/SO_DONTROUTE`
     <td>Boolean
@@ -170,7 +172,7 @@ the value of either `true` or `false`.
     <td>Boolean (always `true`, see rationale below).
     <tr>
     <td>`SOL_SOCKET/SO_PROTOCOL`
-    <td>Boolean
+    <td>Boolean (new in POSIX-2024)
     <tr>
     <td>`SOL_SOCKET/SO_RCVBUF`
     <td>`long`
@@ -256,14 +258,16 @@ shall initialize them to all-bit-zero before returning them.
 - Mandatory Field(s):
   `sa_family`,
 - Mandatory Fields for `AF_INET`:
-  `sin_family`, `sin_port`, `sin_addr`
+  `sin_family`, `sin_port`, `sin_addr`, `sin_addr.s_addr`
 - Mandatory Fields for `AF_INET6`:
   `sin6_family`, `sin6_port`, `sin6_addr`.
 
-The `__set__` and the `__get__` methods of socket address structure types shall
-convert `sin_port`, `sin_addr`, and `sin6_port` between host byte order (setter
-argument and getter return) and network byte order (underlying data backing)
-when called; `sin6_addr` shall be a 16-byte string object.
+The `__set__` and the `__get__` methods of socket address structure types
+shall convert `sin_port`, `sin_addr.s_addr`, and `sin6_port` between
+host byte order (setter argument and getter return) and
+network byte order (underlying data backing) when called;
+the fields `sin_addr` and `sin6_addr` shall be 4-byte and 16-byte
+string objects respectively.
 
 ```
 [sock_linger(DirectStructFieldAccess): subr sock_linger()]
@@ -282,7 +286,11 @@ when called; `sin6_addr` shall be a 16-byte string object.
 <?= hc_H2("Hostname-Address Resolution") ?>
 
 ```
-subr getaddrinfo(hostname, service, family, socktype, protocol, flags);
+[subr getaddrinfo(hostname, service, family, socktype, protocol, flags)] := {
+  [method get(ind)] := { // Note this is distinct from the `__get__` method!
+    method get(k), // Note similarly the distinction!
+  },
+}
 ```
 
 The `getaddrinfo` function finds (resolves) the socket addresses of a
@@ -296,23 +304,38 @@ to the POSIX `getaddrinfo` function. If no hinting is needed, they may be
 specified as zero (The `AF_UNSPEC` address family has a numerical value of 0
 as mandated by the standard).
 
-On success, the function returns an array object containing resolved socket
-addresses in the form of `addrinfo` structure whose fields may be consulted
-to create sockets to initiate or receive connections.
+On success, the function returns an object with a method `get`, which receives
+a single integer argument, as (0-based) index to access the `addrinfo` the
+socket address info structures, which may be consulted to create sockets to
+initiate or receive connections. The index to this method begins at 0, and ends
+at the first index where the method returns `null`.
 
 On error, one of the `EAI_*` error codes, or in the case of `EAI_SYSTEM`,
 one of the `errno` codes shall be casted into a `null` and returned.
 
-The following member fields of the `addrinfo` structure shall be accessible:
-- `ai_family`: the address family of the socket,
-- `ai_socktype`: the socket type,
-- `ai_protocol`: the protocol of the socket,
-- `ai_addr`: the socket address object,
-- `ai_canonname`: the "canonical name of service location".
+The `addrinfo` address contains another `get` method, and the following
+attributes are accessible through this `get` method:
+- `family`: the address family of the socket,
+- `socktype`: the socket type,
+- `protocol`: the protocol of the socket,
+- `addr`: the socket address object,
+- `cname`: the "canonical name of service location".
 
 **Note**: because `ai_flags` is the hint input, it's not part of mandated
 readable output; since the result is returned in the form of array objects,
 there's no need for `ai_next` field.
+
+**Implementation Note**: The C API for getting address info uses
+the `addrinfo` data structure type to return addresses informations
+in the form of chained lists - although sufficient for applications to
+iterate over the list, this API design isn't ideal for higher-level
+languages such as <?= langname() ?>, where there's better idioms for
+iterators. It is very desirable to reuse the underlying data backing
+for the <?= langname() ?> API binding directly, one for efficiency
+reasons, and also avoid the cumbersomeness to error-check evey step
+of a potential API that actually 'converts' the C backing to an array
+of named tuples - a `get` method for attribute access distinct from
+the `__get__` method for object property access is decided on for this.
 
 ```
 subr getnameinfo(sockaddr, flags);
@@ -331,48 +354,4 @@ corresponding respectively to those in the POSIX API:
 
 <?= hc_H2("Synchronous Multiplexing") ?>
 
-```
-[subr PollFDs(n)] := {
-  [pollfd(DirectStructFieldAccess): method __get__(i)] :={
-    __get__(k),
-    __set__(k, v),
-  },
-  method __set__(i, pollfd_elem),
-  method __copy__(),
-  method __final__(),
-  method trunc(n),
-}
-
-subr poll(fdArray, timeout);
-```
-
-The `PollFDs` function creates and returns an array of _n_ `pollfd` structures.
-
-The `__get__` method of this array returns the _i_'th element (in 0-based indexing)
-which is a `pollfd` structure. If this structure didn't go out of scope
-before the PollFDs array, then behavior of accessing it is undefined.
-(This permits it be implemented as weak reference to the array.)
-
-The `__set__` element copies the content of the `pollfd_elem` argument
-into the _i_'th element of the array.
-
-The resource management of the PollFDs array are goverend by the `__copy__`
-and the `__final__` methods. The destruction of the array shall have no effect
-on the file handles it contains.
-
-The `trunc` method may be used to resize the array. After shrinking the array,
-excess file handles shall not be closed (i.e. they're considered weak reference),
-and after growing the array, additional slots shall be zero-initialized with
-the file handle field set to a distinguished non-valid value.
-
-A `pollfd` structure shall allows the setting of the following fields:
-- `fd`: the file handle. Because of the need to convert it from a CXING file
-  handle to a system handle, certain information may be lost preventing it
-  from being retrieved back using the `__get__` method.
-- `events`: the IO event that the program is interested in,
-- `revents`: the IO event occured before polling completed.
-
-The implementation shall define at least the following integer constants
-corresponding respectively to those in the POSIX API:
-- `POLLIN`, `POLLOUT`.
-- `POLLERR`, `POLLHUP`, `POLLNVAL`.
+**TODO** 2026-06-29: This section is being reworked using the initset approach.
