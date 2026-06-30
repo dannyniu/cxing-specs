@@ -354,4 +354,35 @@ corresponding respectively to those in the POSIX API:
 
 <?= hc_H2("Synchronous Multiplexing") ?>
 
-**TODO** 2026-06-29: This section is being reworked using the initset approach.
+```
+subr pollset(capacity) := {
+  method __copy__(),
+  method __final__(),
+  method __initset__(),
+  method poll(timeout),
+  method revents(index),
+}
+```
+
+The `pollset` function creates a set for holding input/output handles 
+for 'polling'. Polling allows the program to determine which ones of 
+the set of handles are ready to perform which types of IO operations.
+
+The created set shall be capable of holding `capacity` IO handles, supplied
+as the `key` argument (left-side of the colon in the brace form of 
+object-definition notation), for events specified in the `value` argument
+(right-side correspondingly) of the `__initset__` method.
+
+The `poll` method examines the IO handles in the set for IO or exceptional
+events, and returns the number of IO handles ready for IO operations 
+when they are or when `timeout` non-negative milliseconds has elapsed
+(i.e. if `timeout` is negative, `poll` may wait indefinitely).
+
+The order in which IO handles are specified in `__initset__` is significant,
+and is used as the zero-based ordinal specified to the `revents` method 
+to query the occurrence of IO and exceptional events.
+
+The implementation shall define at least the following integer constants
+corresponding respectively to those in the POSIX API:
+- `POLLIN`, `POLLOUT`.
+- `POLLERR`, `POLLHUP`, `POLLNVAL`.
